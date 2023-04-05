@@ -1,5 +1,15 @@
 import { ReactNode } from 'react'
+import classnames from 'classnames'
 
-export function Container({ children }: { children: ReactNode }) {
-  return <div className="max-w-[1280px] mx-auto">{children}</div>
+interface ContainerProps {
+  children: ReactNode
+  classNames?: string
+}
+
+export function Container({ children, classNames }: ContainerProps) {
+  return (
+    <div className={classnames(classNames, 'max-w-[1280px] mx-auto')}>
+      {children}
+    </div>
+  )
 }

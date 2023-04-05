@@ -58,7 +58,7 @@ function App() {
   })
 
   return (
-    <Container>
+    <Container classNames="mt-12">
       <div className="py-4 px-3 rounded-md border border-slate-200 shadow-md">
         <div className="flex justify-between">
           <input
@@ -98,7 +98,7 @@ function App() {
                 {data.data.map((recibo) => {
                   return (
                     <tr
-                      className="[&_td]:px-3 [&_td]:py-2 [&_td]:font-normal [&_td]:text-md"
+                      className="[&_td]:p-3 [&_td]:font-normal [&_td]:text-md border-b border-slate-200"
                       key={recibo.id}
                     >
                       <td className="text-left">{recibo.fazenda.nome}</td>
