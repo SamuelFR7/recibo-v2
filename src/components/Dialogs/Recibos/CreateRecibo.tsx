@@ -59,6 +59,9 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
     reset,
   } = useForm<CreateReciboSchema>({
     resolver: zodResolver(createReciboSchema),
+    defaultValues: {
+      data: new Date().toISOString().split('T')[0].split('-').join('-'),
+    },
   })
   const queryClient = useQueryClient()
 
