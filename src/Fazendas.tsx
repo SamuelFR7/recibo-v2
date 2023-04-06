@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Container } from './components/Container'
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from './services/api'
 import { Farm } from './Recibos'
 import { Loader } from './components/Loader'
@@ -8,6 +8,7 @@ import { Pencil, Trash } from 'phosphor-react'
 
 export default function Fazendas() {
   const [search, setSearch] = useState('')
+  const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['fazendas', search],
     queryFn: async () => {
@@ -16,6 +17,15 @@ export default function Fazendas() {
           search ? `/api/fazenda?nome=${search.toUpperCase()}` : '/api/fazenda',
         )
         .then((res) => res.data)
+    },
+  })
+
+  const deleteFarm = useMutation({
+    mutationFn: async (id: number) => {
+      return api.delete(`/api/fazenda/${id}`).then((res) => res.data)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['fazendas'])
     },
   })
 
@@ -59,7 +69,14 @@ export default function Fazendas() {
                         <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
                           <Pencil size={16} weight="bold" />
                         </button>
-                        <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
+                        <button
+                          onClick={() =>
+                            window.confirm(
+                              'Certeza que deseja deletar esse item?',
+                            ) && deleteFarm.mutate(fazenda.id)
+                          }
+                          className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md"
+                        >
                           <Trash size={16} weight="bold" />
                         </button>
                       </td>
