@@ -1,5 +1,5 @@
-import { Dialog } from '@headlessui/react'
-import React from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
+import React, { useEffect, useState } from 'react'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -9,10 +9,9 @@ import { Input } from '../../Form/Input'
 import { TextArea } from '../../Form/TextArea'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../../services/api'
+import { X } from 'phosphor-react'
 
 interface CreateReciboDialogProps {
-  isOpen: boolean
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   fazendas: Farm[]
 }
 
@@ -46,11 +45,8 @@ const createReciboSchema = z.object({
 
 type CreateReciboSchema = z.infer<typeof createReciboSchema>
 
-export function CreateReciboDialog({
-  isOpen,
-  setIsOpen,
-  fazendas,
-}: CreateReciboDialogProps) {
+export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
+  const [open, setOpen] = useState(false)
   const {
     register,
     handleSubmit,
@@ -60,11 +56,6 @@ export function CreateReciboDialog({
     resolver: zodResolver(createReciboSchema),
   })
   const queryClient = useQueryClient()
-
-  function handleClose() {
-    reset()
-    setIsOpen(false)
-  }
 
   const mutation = useMutation({
     mutationFn: async (values: CreateReciboSchema) => {
@@ -93,7 +84,7 @@ export function CreateReciboDialog({
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['recibos'])
-      handleClose()
+      setOpen(false)
     },
   })
 
@@ -101,15 +92,20 @@ export function CreateReciboDialog({
     mutation.mutate(values)
   }
 
+  useEffect(() => {
+    reset()
+  }, [open, reset])
+
   return (
-    <Dialog
-      open={isOpen}
-      onClose={() => handleClose()}
-      className="relative z-50"
-    >
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-[1000px] rounded bg-white p-6">
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>
+        <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
+          Adicionar Recibo
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="bg-black/30 fixed inset-0" />
+        <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] w-full max-w-[1000px] rounded bg-white p-6">
           <Dialog.Title className="text-2xl font-bold">
             Novo recibo
           </Dialog.Title>
@@ -212,7 +208,7 @@ export function CreateReciboDialog({
             <div className="w-full flex justify-end mt-2 gap-3">
               <button
                 type="button"
-                onClick={handleClose}
+                onClick={() => setOpen(false)}
                 className="py-3 px-5 font-medium bg-gray-400 hover:bg-gray-500 text-white rounded-md"
               >
                 Cancelar
@@ -225,8 +221,13 @@ export function CreateReciboDialog({
               </button>
             </div>
           </form>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+          <Dialog.Close asChild>
+            <button className="text-gray-800 flex items-center justify-center hover:bg-slate-200 bg-slate-100 h-[25px] w-[25px] rounded-md absolute top-[10px] right-[10px]">
+              <X />
+            </button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }

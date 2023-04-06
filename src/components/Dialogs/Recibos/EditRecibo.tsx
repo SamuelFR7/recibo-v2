@@ -228,12 +228,11 @@ export function EditReciboDialog({
               </button>
             </div>
           </form>
-          <button
-            onClick={() => setOpen(false)}
-            className="text-gray-800 flex items-center justify-center hover:bg-slate-200 bg-slate-100 h-[25px] w-[25px] rounded-md absolute top-[10px] right-[10px]"
-          >
-            <X />
-          </button>
+          <Dialog.Close>
+            <button className="text-gray-800 flex items-center justify-center hover:bg-slate-200 bg-slate-100 h-[25px] w-[25px] rounded-md absolute top-[10px] right-[10px]">
+              <X />
+            </button>
+          </Dialog.Close>
         </Dialog.Content>
       </Dialog.Portal>
     </Dialog.Root>

@@ -1,14 +1,13 @@
-import { Dialog } from '@headlessui/react'
+import * as Dialog from '@radix-ui/react-dialog'
 import { Farm } from '../../../Recibos'
 import { z } from 'zod'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React from 'react'
+import { useEffect, useState } from 'react'
 import { Select } from '../../Form/Select'
+import { X } from 'phosphor-react'
 
 interface PrintRecibosProps {
-  isOpen: boolean
-  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>
   fazendas: Farm[]
 }
 
@@ -21,11 +20,8 @@ const printRecibosSchema = z.object({
 
 type PrintRecibosSchema = z.infer<typeof printRecibosSchema>
 
-export function PrintRecibos({
-  fazendas,
-  isOpen,
-  setIsOpen,
-}: PrintRecibosProps) {
+export function PrintRecibos({ fazendas }: PrintRecibosProps) {
+  const [open, setOpen] = useState(false)
   const {
     register,
     handleSubmit,
@@ -38,11 +34,6 @@ export function PrintRecibos({
     },
   })
 
-  function handleClose() {
-    reset()
-    setIsOpen(false)
-  }
-
   const handlePrintRecibos: SubmitHandler<PrintRecibosSchema> = (values) => {
     window.open(
       `${
@@ -51,15 +42,20 @@ export function PrintRecibos({
     )
   }
 
+  useEffect(() => {
+    reset()
+  }, [open, reset])
+
   return (
-    <Dialog
-      open={isOpen}
-      onClose={() => handleClose()}
-      className="relative z-50"
-    >
-      <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
-      <div className="fixed inset-0 flex items-center justify-center p-4">
-        <Dialog.Panel className="w-full max-w-[1000px] rounded bg-white p-6">
+    <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Trigger asChild>
+        <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
+          Imprimir Recibos
+        </button>
+      </Dialog.Trigger>
+      <Dialog.Portal>
+        <Dialog.Overlay className="bg-black/30 fixed inset-0" />
+        <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] w-full max-w-[1000px] rounded bg-white p-6">
           <Dialog.Title className="text-2xl font-bold">
             Imprimir Recibos
           </Dialog.Title>
@@ -84,7 +80,7 @@ export function PrintRecibos({
             <div className="w-full flex justify-end mt-2 gap-3">
               <button
                 type="button"
-                onClick={handleClose}
+                onClick={() => setOpen(false)}
                 className="py-3 px-5 font-medium bg-gray-400 hover:bg-gray-500 text-white rounded-md"
               >
                 Cancelar
@@ -97,8 +93,13 @@ export function PrintRecibos({
               </button>
             </div>
           </form>
-        </Dialog.Panel>
-      </div>
-    </Dialog>
+          <Dialog.Close>
+            <button className="text-gray-800 flex items-center justify-center hover:bg-slate-200 bg-slate-100 h-[25px] w-[25px] rounded-md absolute top-[10px] right-[10px]">
+              <X />
+            </button>
+          </Dialog.Close>
+        </Dialog.Content>
+      </Dialog.Portal>
+    </Dialog.Root>
   )
 }
