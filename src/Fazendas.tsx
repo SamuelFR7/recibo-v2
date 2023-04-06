@@ -4,8 +4,9 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from './services/api'
 import { Farm } from './Recibos'
 import { Loader } from './components/Loader'
-import { Pencil, Trash } from 'phosphor-react'
+import { Trash } from 'phosphor-react'
 import { CreateFazendaDialog } from './components/Dialogs/Fazendas/CreateFazenda'
+import { EditFazendaDialog } from './components/Dialogs/Fazendas/EditFazenda'
 
 export default function Fazendas() {
   const [search, setSearch] = useState('')
@@ -66,9 +67,7 @@ export default function Fazendas() {
                       <td className="text-left">{fazenda.pagadorNome}</td>
                       <td className="text-left">{fazenda.pagadorEndereco}</td>
                       <td className="text-center">
-                        <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
-                          <Pencil size={16} weight="bold" />
-                        </button>
+                        <EditFazendaDialog fazendaData={fazenda} />
                       </td>
                       <td className="text-center">
                         <button
