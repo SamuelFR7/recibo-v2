@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Container } from './components/Container'
 import { useQuery } from '@tanstack/react-query'
 import { api } from './services/api'
-import { Farm } from './App'
+import { Farm } from './Recibos'
 import { Loader } from './components/Loader'
 import { Pencil, Trash } from 'phosphor-react'
 

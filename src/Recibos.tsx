@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Loader } from './components/Loader'
 import { Printer, Pencil, Trash } from 'phosphor-react'
@@ -41,9 +41,10 @@ interface ReceiptsRequest {
   data: Receipt[]
 }
 
-function App() {
+function Recibos() {
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
+  const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['recibos', currentPage, search],
     queryFn: async () => {
@@ -54,6 +55,15 @@ function App() {
             : `/api/recibo?PageNumber=${currentPage}`,
         )
         .then((res) => res.data)
+    },
+  })
+
+  const deleteRecibo = useMutation({
+    mutationFn: async (id: number) => {
+      return api.delete(`/api/recibo/${id}`).then((res) => res.data)
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['recibos'])
     },
   })
 
@@ -111,7 +121,16 @@ function App() {
                         }).format(recibo.valor)}
                       </td>
                       <td className="text-center">
-                        <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
+                        <button
+                          onClick={() =>
+                            window.open(
+                              `${
+                                import.meta.env.VITE_API_ADDRESS
+                              }/api/relatoriorecibo/unico?id=${recibo.id}`,
+                            )
+                          }
+                          className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md"
+                        >
                           <Printer size={16} weight="bold" />
                         </button>
                       </td>
@@ -121,7 +140,14 @@ function App() {
                         </button>
                       </td>
                       <td className="text-center">
-                        <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
+                        <button
+                          onClick={() => {
+                            window.confirm(
+                              'Certeza de que deseja deletar este item?',
+                            ) && deleteRecibo.mutate(recibo.id)
+                          }}
+                          className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md"
+                        >
                           <Trash size={16} weight="bold" />
                         </button>
                       </td>
@@ -147,4 +173,4 @@ function App() {
   )
 }
 
-export default App
+export default Recibos

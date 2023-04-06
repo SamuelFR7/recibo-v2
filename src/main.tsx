@@ -1,18 +1,20 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import App from './App'
+
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import './index.css'
-import { Header } from './components/Header'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
+
+import { Header } from './components/Header'
 import Fazendas from './Fazendas'
+import Recibos from './Recibos'
+import './index.css'
 
 const queryClient = new QueryClient()
 
 const router = createBrowserRouter([
   {
     path: '/',
-    element: <App />,
+    element: <Recibos />,
   },
   {
     path: '/fazendas',
