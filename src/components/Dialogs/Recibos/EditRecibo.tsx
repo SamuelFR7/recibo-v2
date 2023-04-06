@@ -18,25 +18,30 @@ interface EditReciboDialogProps {
 const editReciboSchema = z.object({
   data: z.string(),
   valor: z.number().min(0.01, { message: 'Digite um valor acima de 0' }),
-  beneficiarioNome: z.string().nonempty({ message: 'Digite um nome' }),
-  beneficiarioEndereco: z.string().nullish(),
+  beneficiarioNome: z
+    .string()
+    .nonempty({ message: 'Digite um nome' })
+    .toUpperCase(),
+  beneficiarioEndereco: z.string().toUpperCase().nullish(),
   beneficiarioDocumento: z
     .string()
+    .toUpperCase()
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
-  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }),
-  pagadorEndereco: z.string().nullish(),
+  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
+  pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
+    .toUpperCase()
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
-  historico: z.string().nullish(),
+  historico: z.string().toUpperCase().nullish(),
 })
 
 type EditReciboSchema = z.infer<typeof editReciboSchema>

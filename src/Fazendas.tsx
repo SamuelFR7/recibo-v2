@@ -5,6 +5,7 @@ import { api } from './services/api'
 import { Farm } from './Recibos'
 import { Loader } from './components/Loader'
 import { Pencil, Trash } from 'phosphor-react'
+import { CreateFazendaDialog } from './components/Dialogs/Fazendas/CreateFazenda'
 
 export default function Fazendas() {
   const [search, setSearch] = useState('')
@@ -40,9 +41,7 @@ export default function Fazendas() {
             placeholder="Pesquisar"
             className="bg-transparent border hover:bg-slate-50 border-slate-200 rounded-md px-3 w-[85%] py-2"
           />
-          <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
-            Adicionar Fazenda
-          </button>
+          <CreateFazendaDialog />
         </div>
         {data && !isLoading ? (
           <>
@@ -52,7 +51,8 @@ export default function Fazendas() {
                   <th className="text-left">NOME</th>
                   <th className="text-left">NOME PAGADOR</th>
                   <th className="text-left">ENDERECO PAGADOR</th>
-                  <th className="text-left">OPÇÕES</th>
+                  <th className="text-center">EDITAR</th>
+                  <th className="text-center">DELETAR</th>
                 </tr>
               </thead>
               <tbody>
@@ -65,10 +65,12 @@ export default function Fazendas() {
                       <td className="text-left">{fazenda.nome}</td>
                       <td className="text-left">{fazenda.pagadorNome}</td>
                       <td className="text-left">{fazenda.pagadorEndereco}</td>
-                      <td className="flex gap-2 items-center">
+                      <td className="text-center">
                         <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
                           <Pencil size={16} weight="bold" />
                         </button>
+                      </td>
+                      <td className="text-center">
                         <button
                           onClick={() =>
                             window.confirm(

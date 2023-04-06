@@ -23,10 +23,10 @@ const InputBase: ForwardRefRenderFunction<HTMLInputElement, InputProps> = (
           'px-3 py-2 rounded-md border border-slate-200 w-full',
           'focus:placeholder:px-1 placeholder:duration-200',
           'disabled:cursor-not-allowed',
-          'focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500',
+          'focus:outline-none  focus:ring-1',
           error
             ? 'border-red-500 text-red-500 focus:border-red-500 focus:ring-red-500'
-            : '',
+            : 'focus:border-sky-500 focus:ring-sky-500',
           className,
         )}
         {...rest}
