@@ -6,7 +6,7 @@ import { api } from './services/api'
 import { Pagination } from './components/Pagination'
 import { Container } from './components/Container'
 
-interface Farm {
+export interface Farm {
   id: number
   nome: string
   pagadorNome: string
