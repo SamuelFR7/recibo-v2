@@ -7,6 +7,7 @@ import { Pagination } from './components/Pagination'
 import { Container } from './components/Container'
 import { CreateReciboDialog } from './components/Dialogs/Recibos/CreateRecibo'
 import { PrintListagem } from './components/Dialogs/Recibos/PrintListagem'
+import { PrintRecibos } from './components/Dialogs/Recibos/PrintRecibos'
 
 export interface Farm {
   id: number
@@ -46,6 +47,7 @@ interface ReceiptsRequest {
 function Recibos() {
   const [createReciboIsOpen, setCreateReciboIsOpen] = useState(false)
   const [printListagemIsOpen, setPrintListagemIsOpen] = useState(false)
+  const [printRecibosIsOpen, setPrintRecibosIsOpen] = useState(false)
 
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -93,6 +95,11 @@ function Recibos() {
             setIsOpen={setPrintListagemIsOpen}
             fazendas={fazendasData}
           />
+          <PrintRecibos
+            isOpen={printRecibosIsOpen}
+            setIsOpen={setPrintRecibosIsOpen}
+            fazendas={fazendasData}
+          />
         </>
       )}
       <Container classNames="mt-12">
@@ -118,7 +125,10 @@ function Recibos() {
               >
                 Imprimir Listagem
               </button>
-              <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
+              <button
+                onClick={() => setPrintRecibosIsOpen(true)}
+                className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium"
+              >
                 Imprimir Recibos
               </button>
             </div>
