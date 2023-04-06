@@ -6,6 +6,7 @@ import { api } from './services/api'
 import { Pagination } from './components/Pagination'
 import { Container } from './components/Container'
 import { CreateReciboDialog } from './components/Dialogs/Recibos/CreateRecibo'
+import { PrintListagem } from './components/Dialogs/Recibos/PrintListagem'
 
 export interface Farm {
   id: number
@@ -44,6 +45,7 @@ interface ReceiptsRequest {
 
 function Recibos() {
   const [createReciboIsOpen, setCreateReciboIsOpen] = useState(false)
+  const [printListagemIsOpen, setPrintListagemIsOpen] = useState(false)
 
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
@@ -80,11 +82,18 @@ function Recibos() {
   return (
     <>
       {fazendasData && !fazendasLoading && (
-        <CreateReciboDialog
-          isOpen={createReciboIsOpen}
-          setIsOpen={setCreateReciboIsOpen}
-          fazendas={fazendasData}
-        />
+        <>
+          <CreateReciboDialog
+            isOpen={createReciboIsOpen}
+            setIsOpen={setCreateReciboIsOpen}
+            fazendas={fazendasData}
+          />
+          <PrintListagem
+            isOpen={printListagemIsOpen}
+            setIsOpen={setPrintListagemIsOpen}
+            fazendas={fazendasData}
+          />
+        </>
       )}
       <Container classNames="mt-12">
         <div className="py-4 px-3 rounded-md border border-slate-200 shadow-md">
@@ -103,7 +112,10 @@ function Recibos() {
               >
                 Adicionar Recibo
               </button>
-              <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
+              <button
+                onClick={() => setPrintListagemIsOpen(true)}
+                className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium"
+              >
                 Imprimir Listagem
               </button>
               <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
