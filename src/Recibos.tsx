@@ -8,6 +8,7 @@ import { Container } from './components/Container'
 import { CreateReciboDialog } from './components/Dialogs/Recibos/CreateRecibo'
 import { PrintListagem } from './components/Dialogs/Recibos/PrintListagem'
 import { PrintRecibos } from './components/Dialogs/Recibos/PrintRecibos'
+import { EditReciboDialog } from './components/Dialogs/Recibos/EditRecibo'
 
 export interface Farm {
   id: number
@@ -17,7 +18,7 @@ export interface Farm {
   pagadorDocumento: string
 }
 
-interface Receipt {
+export interface Receipt {
   id: number
   fazenda: Farm
   numero: number
@@ -100,6 +101,10 @@ function Recibos() {
             setIsOpen={setPrintRecibosIsOpen}
             fazendas={fazendasData}
           />
+          {/* <EditReciboDialog
+            isOpen={editRecibosDialogIsOpen}
+            setIsOpen={setEditReciboDialogIsOpen}
+          /> */}
         </>
       )}
       <Container classNames="mt-12">
@@ -148,7 +153,7 @@ function Recibos() {
                   </tr>
                 </thead>
                 <tbody>
-                  {data.data.map((recibo) => {
+                  {data.data.map((recibo, index) => {
                     return (
                       <tr
                         className="[&_td]:p-3 [&_td]:font-normal [&_td]:text-md border-b border-slate-200"
@@ -178,9 +183,11 @@ function Recibos() {
                           </button>
                         </td>
                         <td className="text-center">
-                          <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
-                            <Pencil size={16} weight="bold" />
-                          </button>
+                          <EditReciboDialog reciboData={recibo}>
+                            <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
+                              <Pencil size={16} weight="bold" />
+                            </button>
+                          </EditReciboDialog>
                         </td>
                         <td className="text-center">
                           <button
