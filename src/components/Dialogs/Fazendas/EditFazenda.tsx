@@ -85,60 +85,61 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
-        <Dialog.Overlay className="bg-black/30 fixed inset-0" />
-        <Dialog.Content className="fixed top-[50%] left-[50%] max-h-[85vh] translate-x-[-50%] translate-y-[-50%] w-full max-w-[1000px] rounded bg-white p-6">
-          <Dialog.Title className="text-2xl font-bold mb-2">
-            Editar fazenda
-          </Dialog.Title>
-          <form onSubmit={handleSubmit(handleEditFarm)}>
-            <Input
-              label="Nome fazenda"
-              {...register('nome')}
-              error={errors.nome}
-              placeholder="Fazenda"
-            />
-            <div className="flex flex-col gap-2 mt-3">
-              <h2>Pagador</h2>
-              <div className="flex flex-col gap-2 px-2">
-                <Input
-                  label="Nome"
-                  {...register('pagadorNome')}
-                  error={errors.pagadorNome}
-                  placeholder="Nome"
-                />
-                <div className="flex gap-2">
+        <Dialog.Overlay className="fixed inset-0 grid place-items-center overflow-y-auto bg-black/30">
+          <Dialog.Content className="min-w-[1000px] rounded-md bg-white p-5">
+            <Dialog.Title className="text-2xl font-bold mb-2">
+              Editar fazenda
+            </Dialog.Title>
+            <form onSubmit={handleSubmit(handleEditFarm)}>
+              <Input
+                label="Nome fazenda"
+                {...register('nome')}
+                error={errors.nome}
+                placeholder="Fazenda"
+              />
+              <div className="flex flex-col gap-2 mt-3">
+                <h2>Pagador</h2>
+                <div className="flex flex-col gap-2 px-2">
                   <Input
-                    label="Endereço"
-                    {...register('pagadorEndereco')}
-                    error={errors.pagadorEndereco}
-                    placeholder="Endereço"
+                    label="Nome"
+                    {...register('pagadorNome')}
+                    error={errors.pagadorNome}
+                    placeholder="Nome"
                   />
-                  <Input
-                    label="CNPJ/CPF"
-                    {...register('pagadorDocumento')}
-                    error={errors.pagadorDocumento}
-                    placeholder="Documento"
-                  />
+                  <div className="flex gap-2">
+                    <Input
+                      label="Endereço"
+                      {...register('pagadorEndereco')}
+                      error={errors.pagadorEndereco}
+                      placeholder="Endereço"
+                    />
+                    <Input
+                      label="CNPJ/CPF"
+                      {...register('pagadorDocumento')}
+                      error={errors.pagadorDocumento}
+                      placeholder="Documento"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="w-full flex justify-end mt-2 gap-3">
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                className="py-3 px-5 font-medium bg-gray-400 hover:bg-gray-500 text-white rounded-md"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                className="py-3 px-5 font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-md"
-              >
-                Salvar
-              </button>
-            </div>
-          </form>
-        </Dialog.Content>
+              <div className="w-full flex justify-end mt-2 gap-3">
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  className="py-3 px-5 font-medium bg-gray-400 hover:bg-gray-500 text-white rounded-md"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  className="py-3 px-5 font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-md"
+                >
+                  Salvar
+                </button>
+              </div>
+            </form>
+          </Dialog.Content>
+        </Dialog.Overlay>
       </Dialog.Portal>
     </Dialog.Root>
   )
