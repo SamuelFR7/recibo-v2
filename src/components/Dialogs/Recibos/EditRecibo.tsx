@@ -17,7 +17,12 @@ interface EditReciboDialogProps {
 
 const editReciboSchema = z.object({
   data: z.string(),
-  valor: z.number().min(0.01, { message: 'Digite um valor acima de 0' }),
+  valor: z
+    .number()
+    .min(0.01, { message: 'Digite um valor acima de 0' })
+    .multipleOf(0.01, {
+      message: 'O valor pode ter no máximo duas casas decimais',
+    }),
   beneficiarioNome: z
     .string()
     .nonempty({ message: 'Digite um nome' })
@@ -158,6 +163,7 @@ export function EditReciboDialog({
                   label="Valor"
                   type="number"
                   {...register('valor', { valueAsNumber: true })}
+                  step=".01"
                   error={errors.valor}
                   placeholder="Digite um valor"
                 />
