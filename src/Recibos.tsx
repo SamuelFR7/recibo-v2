@@ -55,7 +55,7 @@ function Recibos() {
       return api
         .get<ReceiptsRequest>(
           search
-            ? `/api/recibo?nome=${search.toUpperCase()}`
+            ? `/api/recibo?nome=${search.toUpperCase()}&PageNumber=${currentPage}`
             : `/api/recibo?PageNumber=${currentPage}`,
         )
         .then((res) => res.data)
