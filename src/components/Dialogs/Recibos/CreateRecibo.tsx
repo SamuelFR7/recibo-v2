@@ -62,6 +62,8 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
     handleSubmit,
     formState: { errors },
     reset,
+    watch,
+    setValue,
   } = useForm<CreateReciboSchema>({
     resolver: zodResolver(createReciboSchema),
     defaultValues: {
@@ -108,6 +110,20 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
   useEffect(() => {
     reset()
   }, [open, reset])
+
+  const farm = watch('fazenda')
+
+  React.useEffect(() => {
+    const selectedFarm = fazendas.find((item) => item.id === Number(farm))
+
+    if (!selectedFarm) {
+      return
+    }
+
+    setValue('pagadorNome', selectedFarm?.pagadorNome)
+    setValue('pagadorEndereco', selectedFarm?.pagadorEndereco)
+    setValue('pagadorDocumento', selectedFarm?.pagadorEndereco)
+  }, [farm])
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
