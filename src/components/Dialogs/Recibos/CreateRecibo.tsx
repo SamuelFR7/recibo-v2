@@ -122,7 +122,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
 
     setValue('pagadorNome', selectedFarm?.pagadorNome)
     setValue('pagadorEndereco', selectedFarm?.pagadorEndereco)
-    setValue('pagadorDocumento', selectedFarm?.pagadorEndereco)
+    setValue('pagadorDocumento', selectedFarm?.pagadorDocumento)
   }, [farm])
 
   return (
