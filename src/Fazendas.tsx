@@ -53,7 +53,7 @@ export default function Fazendas() {
                   <th className="text-left">NOME PAGADOR</th>
                   <th className="text-left">ENDERECO PAGADOR</th>
                   <th className="text-center">EDITAR</th>
-                  <th className="text-center">DELETAR</th>
+                  <th className="text-center">EXCLUIR</th>
                 </tr>
               </thead>
               <tbody>

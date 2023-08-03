@@ -47,6 +47,7 @@ const editReciboSchema = z.object({
       { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
   historico: z.string().toUpperCase().nullish(),
+  alreadyPrint: z.boolean().default(false)
 })
 
 type EditReciboSchema = z.infer<typeof editReciboSchema>
@@ -61,9 +62,12 @@ export function EditReciboDialog({
     handleSubmit,
     formState: { errors },
     reset,
+    setValue,
+    watch
   } = useForm<EditReciboSchema>({
     resolver: zodResolver(editReciboSchema),
     defaultValues: {
+      alreadyPrint: false,
       beneficiarioDocumento: reciboData.beneficiarioDocumento,
       beneficiarioEndereco: reciboData.beneficiarioEndereco,
       beneficiarioNome: reciboData.beneficiarioNome,
@@ -100,9 +104,12 @@ export function EditReciboDialog({
         })
         .then((res) => res.data)
     },
-    onSuccess: async () => {
+    onSuccess: async (data, input) => {
       await queryClient.invalidateQueries(['recibos'])
       setOpen(false)
+      if (input.alreadyPrint) {
+        window.open(`${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${reciboData.id}`)
+      }
     },
   })
 
@@ -231,6 +238,10 @@ export function EditReciboDialog({
                 </div>
               </div>
               <div className="w-full flex justify-end mt-2 gap-3">
+                <div className='flex items-center gap-2 font-medium'>
+                  <input type='checkbox' onClick={() => setValue('alreadyPrint', !watch('alreadyPrint'))} />
+                  <span>Imprimir ao salvar</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}

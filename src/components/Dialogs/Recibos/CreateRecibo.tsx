@@ -10,6 +10,7 @@ import { TextArea } from '../../Form/TextArea'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../../services/api'
 import { X } from 'phosphor-react'
+import { redirect } from 'react-router-dom'
 
 interface CreateReciboDialogProps {
   fazendas: Farm[]
@@ -51,6 +52,7 @@ const createReciboSchema = z.object({
       { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
   historico: z.string().toUpperCase().nullish(),
+  alreadyPrint: z.boolean().default(false)
 })
 
 type CreateReciboSchema = z.infer<typeof createReciboSchema>
@@ -68,6 +70,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
     resolver: zodResolver(createReciboSchema),
     defaultValues: {
       data: new Date().toISOString().split('T')[0].split('-').join('-'),
+      alreadyPrint: false
     },
   })
   const queryClient = useQueryClient()
@@ -97,9 +100,12 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
         })
         .then((res) => res.data)
     },
-    onSuccess: async () => {
+    onSuccess: async (data, input) => {
       await queryClient.invalidateQueries(['recibos'])
       setOpen(false)
+      if (input.alreadyPrint) {
+        window.open(`${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${data.id}`)
+      }
     },
   })
 
@@ -243,6 +249,10 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
                 </div>
               </div>
               <div className="w-full flex justify-end mt-2 gap-3">
+                <div className='flex items-center gap-2 font-medium'>
+                  <input type='checkbox' onClick={() => setValue('alreadyPrint', !watch('alreadyPrint'))} />
+                  <span>Imprimir ao salvar</span>
+                </div>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
