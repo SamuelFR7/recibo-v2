@@ -1,4 +1,4 @@
-import { PaginationItem } from './PaginationItem'
+import { PaginationItem } from "./PaginationItem"
 
 interface PaginationProps {
   totalCountOfRegisters: number
@@ -32,19 +32,19 @@ export function Pagination({
     currentPage < lastPage
       ? generatePagesArray(
           currentPage,
-          Math.min(currentPage + siblingsCount, lastPage),
+          Math.min(currentPage + siblingsCount, lastPage)
         )
       : []
 
   return (
-    <div className="text-sm p-4 flex justify-between items-center rounded-b-md">
+    <div className="flex items-center justify-between rounded-b-md p-4 text-sm">
       <div className="text-text-gray">
-        <strong>{(currentPage - 1) * 10 + 1}</strong> -{' '}
+        <strong>{(currentPage - 1) * 10 + 1}</strong> -{" "}
         <strong>
           {currentPage === lastPage
             ? totalCountOfRegisters
             : registersPerPage * currentPage}
-        </strong>{' '}
+        </strong>{" "}
         de <strong>{totalCountOfRegisters}</strong>
       </div>
       <div className="flex gap-2">
@@ -53,7 +53,7 @@ export function Pagination({
             <PaginationItem onPageChange={onPageChange} number={1} />
             {currentPage > 2 + siblingsCount && (
               <span className="text-center">...</span>
-            )}{' '}
+            )}{" "}
           </>
         )}
         {previousPages.length > 0 &&

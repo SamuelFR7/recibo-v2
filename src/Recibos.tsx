@@ -1,15 +1,15 @@
-import React from 'react'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Loader } from './components/Loader'
-import { Printer, Pencil, Trash } from 'phosphor-react'
-import { api } from './services/api'
-import { Pagination } from './components/Pagination'
-import { Container } from './components/Container'
-import { CreateReciboDialog } from './components/Dialogs/Recibos/CreateRecibo'
-import { PrintListagem } from './components/Dialogs/Recibos/PrintListagem'
-import { PrintRecibos } from './components/Dialogs/Recibos/PrintRecibos'
-import { EditReciboDialog } from './components/Dialogs/Recibos/EditRecibo'
+import React from "react"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { useState } from "react"
+import { Loader } from "./components/Loader"
+import { Printer, Pencil, Trash } from "phosphor-react"
+import { api } from "./services/api"
+import { Pagination } from "./components/Pagination"
+import { Container } from "./components/Container"
+import { CreateReciboDialog } from "./components/Dialogs/Recibos/CreateRecibo"
+import { PrintListagem } from "./components/Dialogs/Recibos/PrintListagem"
+import { PrintRecibos } from "./components/Dialogs/Recibos/PrintRecibos"
+import { EditReciboDialog } from "./components/Dialogs/Recibos/EditRecibo"
 
 export interface Farm {
   id: number
@@ -47,26 +47,26 @@ interface ReceiptsRequest {
 }
 
 function Recibos() {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("")
   const [currentPage, setCurrentPage] = useState(1)
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
-    queryKey: ['recibos', currentPage, search],
+    queryKey: ["recibos", currentPage, search],
     queryFn: async () => {
       return api
         .get<ReceiptsRequest>(
           search
             ? `/api/recibo?nome=${search.toUpperCase()}&PageNumber=${currentPage}`
-            : `/api/recibo?PageNumber=${currentPage}`,
+            : `/api/recibo?PageNumber=${currentPage}`
         )
         .then((res) => res.data)
     },
   })
 
   const { data: fazendasData, isLoading: fazendasLoading } = useQuery({
-    queryKey: ['fazendas'],
+    queryKey: ["fazendas"],
     queryFn: async () => {
-      return api.get<Farm[]>('/api/fazenda').then((res) => res.data)
+      return api.get<Farm[]>("/api/fazenda").then((res) => res.data)
     },
   })
 
@@ -75,7 +75,7 @@ function Recibos() {
       return api.delete(`/api/recibo/${id}`).then((res) => res.data)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['recibos'])
+      queryClient.invalidateQueries(["recibos"])
     },
   })
 
@@ -129,9 +129,9 @@ function Recibos() {
                       <td className="text-left">{recibo.beneficiarioNome}</td>
                       <td className="text-left">{recibo.numero}</td>
                       <td className="text-right">
-                        {new Intl.NumberFormat('pt-BR', {
-                          style: 'currency',
-                          currency: 'BRL',
+                        {new Intl.NumberFormat("pt-BR", {
+                          style: "currency",
+                          currency: "BRL",
                         }).format(recibo.valor)}
                       </td>
                       <td className="text-center">
@@ -140,7 +140,7 @@ function Recibos() {
                             window.open(
                               `${
                                 import.meta.env.VITE_API_ADDRESS
-                              }/api/relatoriorecibo/unico?id=${recibo.id}`,
+                              }/api/relatoriorecibo/unico?id=${recibo.id}`
                             )
                           }
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
@@ -159,7 +159,7 @@ function Recibos() {
                         <button
                           onClick={() => {
                             window.confirm(
-                              'Certeza de que deseja deletar este item?',
+                              "Certeza de que deseja deletar este item?"
                             ) && deleteRecibo.mutate(recibo.id)
                           }}
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"

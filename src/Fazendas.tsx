@@ -1,22 +1,22 @@
-import { useState } from 'react'
-import { Container } from './components/Container'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api } from './services/api'
-import { Farm } from './Recibos'
-import { Loader } from './components/Loader'
-import { Trash } from 'phosphor-react'
-import { CreateFazendaDialog } from './components/Dialogs/Fazendas/CreateFazenda'
-import { EditFazendaDialog } from './components/Dialogs/Fazendas/EditFazenda'
+import { useState } from "react"
+import { Container } from "./components/Container"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import { api } from "./services/api"
+import { Farm } from "./Recibos"
+import { Loader } from "./components/Loader"
+import { Trash } from "phosphor-react"
+import { CreateFazendaDialog } from "./components/Dialogs/Fazendas/CreateFazenda"
+import { EditFazendaDialog } from "./components/Dialogs/Fazendas/EditFazenda"
 
 export default function Fazendas() {
-  const [search, setSearch] = useState('')
+  const [search, setSearch] = useState("")
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
-    queryKey: ['fazendas', search],
+    queryKey: ["fazendas", search],
     queryFn: async () => {
       return api
         .get<Farm[]>(
-          search ? `/api/fazenda?nome=${search.toUpperCase()}` : '/api/fazenda',
+          search ? `/api/fazenda?nome=${search.toUpperCase()}` : "/api/fazenda"
         )
         .then((res) => res.data)
     },
@@ -27,28 +27,28 @@ export default function Fazendas() {
       return api.delete(`/api/fazenda/${id}`).then((res) => res.data)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['fazendas'])
+      queryClient.invalidateQueries(["fazendas"])
     },
   })
 
   return (
     <Container classNames="mt-12">
-      <div className="py-4 px-3 rounded-md border border-slate-200 shadow-md">
+      <div className="rounded-md border border-slate-200 px-3 py-4 shadow-md">
         <div className="flex justify-between">
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Pesquisar"
-            className="bg-transparent border hover:bg-slate-50 border-slate-200 rounded-md px-3 w-[85%] py-2"
+            className="w-[85%] rounded-md border border-slate-200 bg-transparent px-3 py-2 hover:bg-slate-50"
           />
           <CreateFazendaDialog />
         </div>
         {data && !isLoading ? (
           <>
-            <table className="w-full mt-4">
+            <table className="mt-4 w-full">
               <thead>
-                <tr className="[&_th]:py-2 [&_th]:px-3 [&_th]:text-slate-500 [&_th]:font-medium [&_th]:text-sm border-b border-slate-200">
+                <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
                   <th className="text-left">NOME</th>
                   <th className="text-left">NOME PAGADOR</th>
                   <th className="text-left">ENDERECO PAGADOR</th>
@@ -61,7 +61,7 @@ export default function Fazendas() {
                   return (
                     <tr
                       key={fazenda.id}
-                      className="[&_td]:p-3 [&_td]:font-normal [&_td]:text-md border-b border-slate-200"
+                      className="[&_td]:text-md border-b border-slate-200 [&_td]:p-3 [&_td]:font-normal"
                     >
                       <td className="text-left">{fazenda.nome}</td>
                       <td className="text-left">{fazenda.pagadorNome}</td>
@@ -73,10 +73,10 @@ export default function Fazendas() {
                         <button
                           onClick={() =>
                             window.confirm(
-                              'Certeza que deseja deletar esse item?',
+                              "Certeza que deseja deletar esse item?"
                             ) && deleteFarm.mutate(fazenda.id)
                           }
-                          className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md"
+                          className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
                         >
                           <Trash size={16} weight="bold" />
                         </button>
@@ -88,7 +88,7 @@ export default function Fazendas() {
             </table>
           </>
         ) : (
-          <div className="h-screen w-full flex items-center justify-center">
+          <div className="flex h-screen w-full items-center justify-center">
             <Loader />
           </div>
         )}

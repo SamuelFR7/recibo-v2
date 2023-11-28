@@ -11,7 +11,7 @@ export function PaginationItem({
 }: PaginationItemProps) {
   if (isCurrent) {
     return (
-      <button className="text-sm h-8 w-9 text-white font-bold rounded-md bg-sky-500 cursor-not-allowed">
+      <button className="h-8 w-9 cursor-not-allowed rounded-md bg-sky-500 text-sm font-bold text-white">
         {number}
       </button>
     )
@@ -19,7 +19,7 @@ export function PaginationItem({
 
   return (
     <button
-      className="text-sm h-8 w-9 bg-gray-200 font-bold rounded-md hover:bg-gray-300"
+      className="h-8 w-9 rounded-md bg-gray-200 text-sm font-bold hover:bg-gray-300"
       onClick={() => onPageChange(number)}
     >
       {number}
