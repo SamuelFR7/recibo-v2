@@ -1,31 +1,30 @@
-import * as Dialog from "@radix-ui/react-dialog"
-import React, { ReactNode, useEffect, useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Input } from "../../Form/Input"
-import { TextArea } from "../../Form/TextArea"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { api } from "../../../services/api"
-import { Receipt } from "../../../Recibos"
-import { X } from "phosphor-react"
+import * as Dialog from '@radix-ui/react-dialog'
+import { useEffect, useState } from 'react'
+import { type SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { Input } from '../../Form/Input'
+import { TextArea } from '../../Form/TextArea'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../../../services/api'
+import { type Receipt } from '../../../Recibos'
+import { Pencil, X } from 'phosphor-react'
 
 interface EditReciboDialogProps {
   reciboData: Receipt
-  children: ReactNode
 }
 
 const editReciboSchema = z.object({
   data: z.string(),
   valor: z
     .number()
-    .min(0.01, { message: "Digite um valor acima de 0" })
+    .min(0.01, { message: 'Digite um valor acima de 0' })
     .multipleOf(0.01, {
-      message: "O valor pode ter no máximo duas casas decimais",
+      message: 'O valor pode ter no máximo duas casas decimais',
     }),
   beneficiarioNome: z
     .string()
-    .nonempty({ message: "Digite um nome" })
+    .nonempty({ message: 'Digite um nome' })
     .toUpperCase(),
   beneficiarioEndereco: z.string().toUpperCase().nullish(),
   beneficiarioDocumento: z
@@ -34,9 +33,9 @@ const editReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: "Digite um CPF ou CNPJ válido ou deixe vazio" }
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
-  pagadorNome: z.string().nonempty({ message: "Digite um nome" }).toUpperCase(),
+  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -44,7 +43,7 @@ const editReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: "Digite um CPF ou CNPJ válido ou deixe vazio" }
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
   historico: z.string().toUpperCase().nullish(),
   alreadyPrint: z.boolean().default(false),
@@ -52,10 +51,7 @@ const editReciboSchema = z.object({
 
 type EditReciboSchema = z.infer<typeof editReciboSchema>
 
-export function EditReciboDialog({
-  reciboData,
-  children,
-}: EditReciboDialogProps) {
+export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
   const [open, setOpen] = useState(false)
   const {
     register,
@@ -73,9 +69,9 @@ export function EditReciboDialog({
       beneficiarioNome: reciboData.beneficiarioNome,
       data: new Date(reciboData.data)
         .toISOString()
-        .split("T")[0]
-        .split("-")
-        .join("-"),
+        .split('T')[0]
+        .split('-')
+        .join('-'),
       historico: reciboData.historico,
       pagadorDocumento: reciboData.pagadorDocumento,
       pagadorEndereco: reciboData.pagadorEndereco,
@@ -88,7 +84,7 @@ export function EditReciboDialog({
   const mutation = useMutation({
     mutationFn: async (values: EditReciboSchema) => {
       return api
-        .put("/api/recibo", {
+        .put('/api/recibo', {
           Id: reciboData.id,
           Numero: reciboData.numero,
           Fazenda: reciboData.fazenda,
@@ -105,13 +101,15 @@ export function EditReciboDialog({
         .then((res) => res.data)
     },
     onSuccess: async (data, input) => {
-      await queryClient.invalidateQueries(["recibos"])
+      await queryClient.invalidateQueries({
+        queryKey: ['recibos'],
+      })
       setOpen(false)
       if (input.alreadyPrint) {
         window.open(
           `${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${
             reciboData.id
-          }`
+          }`,
         )
       }
     },
@@ -128,9 +126,9 @@ export function EditReciboDialog({
       beneficiarioNome: reciboData.beneficiarioNome,
       data: new Date(reciboData.data)
         .toISOString()
-        .split("T")[0]
-        .split("-")
-        .join("-"),
+        .split('T')[0]
+        .split('-')
+        .join('-'),
       historico: reciboData.historico,
       pagadorDocumento: reciboData.pagadorDocumento,
       pagadorEndereco: reciboData.pagadorEndereco,
@@ -141,7 +139,11 @@ export function EditReciboDialog({
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+      <Dialog.Trigger asChild>
+        <button className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500">
+          <Pencil size={16} weight="bold" />
+        </button>
+      </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 grid place-items-center overflow-y-auto bg-black/30">
           <Dialog.Content className="min-w-[1000px] rounded-md bg-white p-5">
@@ -166,14 +168,14 @@ export function EditReciboDialog({
                 <Input
                   type="date"
                   label="Data"
-                  {...register("data", { valueAsDate: false })}
+                  {...register('data', { valueAsDate: false })}
                   error={errors.data}
                   placeholder="Data"
                 />
                 <Input
                   label="Valor"
                   type="number"
-                  {...register("valor", { valueAsNumber: true })}
+                  {...register('valor', { valueAsNumber: true })}
                   step=".01"
                   error={errors.valor}
                   placeholder="Digite um valor"
@@ -184,20 +186,20 @@ export function EditReciboDialog({
                 <div className="flex flex-col gap-2 px-2">
                   <Input
                     label="Nome"
-                    {...register("beneficiarioNome")}
+                    {...register('beneficiarioNome')}
                     error={errors.beneficiarioNome}
                     placeholder="Nome"
                   />
                   <div className="flex gap-2">
                     <Input
                       label="Endereço"
-                      {...register("beneficiarioEndereco")}
+                      {...register('beneficiarioEndereco')}
                       error={errors.beneficiarioEndereco}
                       placeholder="Endereço"
                     />
                     <Input
                       label="CNPJ/CPF"
-                      {...register("beneficiarioDocumento")}
+                      {...register('beneficiarioDocumento')}
                       error={errors.beneficiarioDocumento}
                       placeholder="Documento"
                     />
@@ -209,20 +211,20 @@ export function EditReciboDialog({
                 <div className="flex flex-col gap-2 px-2">
                   <Input
                     label="Nome"
-                    {...register("pagadorNome")}
+                    {...register('pagadorNome')}
                     error={errors.pagadorNome}
                     placeholder="Nome"
                   />
                   <div className="flex gap-2">
                     <Input
                       label="Endereço"
-                      {...register("pagadorEndereco")}
+                      {...register('pagadorEndereco')}
                       error={errors.pagadorEndereco}
                       placeholder="Endereço"
                     />
                     <Input
                       label="CNPJ/CPF"
-                      {...register("pagadorDocumento")}
+                      {...register('pagadorDocumento')}
                       error={errors.pagadorDocumento}
                       placeholder="Documento"
                     />
@@ -234,7 +236,7 @@ export function EditReciboDialog({
                 <div className="px-2">
                   <TextArea
                     label=""
-                    {...register("historico")}
+                    {...register('historico')}
                     placeholder="Histórico"
                     error={errors.historico}
                     className="h-[7rem] resize-none"
@@ -246,7 +248,7 @@ export function EditReciboDialog({
                   <input
                     type="checkbox"
                     onClick={() =>
-                      setValue("alreadyPrint", !watch("alreadyPrint"))
+                      setValue('alreadyPrint', !watch('alreadyPrint'))
                     }
                   />
                   <span>Imprimir ao salvar</span>

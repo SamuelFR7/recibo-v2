@@ -1,15 +1,15 @@
-import { zodResolver } from "@hookform/resolvers/zod"
-import * as Dialog from "@radix-ui/react-dialog"
-import { useEffect, useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { z } from "zod"
-import { Input } from "../../Form/Input"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { api } from "../../../services/api"
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as Dialog from '@radix-ui/react-dialog'
+import { useEffect, useState } from 'react'
+import { type SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Input } from '../../Form/Input'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../../../services/api'
 
 const createFarmSchema = z.object({
-  nome: z.string().nonempty({ message: "Digite um nome" }).toUpperCase(),
-  pagadorNome: z.string().nonempty({ message: "Digite um nome" }).toUpperCase(),
+  nome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
+  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -17,7 +17,7 @@ const createFarmSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: "Digite um CPF ou CNPJ válido ou deixe vazio" }
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
 })
 
@@ -38,7 +38,7 @@ export function CreateFazendaDialog() {
 
   const mutation = useMutation({
     mutationFn: async (values: CreateFarmSchema) => {
-      return api.post("/api/fazenda", {
+      return api.post('/api/fazenda', {
         id: 0,
         Nome: values.nome,
         PagadorNome: values.pagadorNome,
@@ -47,7 +47,9 @@ export function CreateFazendaDialog() {
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries(["fazendas"])
+      await queryClient.invalidateQueries({
+        queryKey: ['fazendas'],
+      })
       setOpen(false)
     },
   })
@@ -76,7 +78,7 @@ export function CreateFazendaDialog() {
             <form onSubmit={handleSubmit(handleCreateFarm)}>
               <Input
                 label="Nome fazenda"
-                {...register("nome")}
+                {...register('nome')}
                 error={errors.nome}
                 placeholder="Fazenda"
               />
@@ -85,20 +87,20 @@ export function CreateFazendaDialog() {
                 <div className="flex flex-col gap-2 px-2">
                   <Input
                     label="Nome"
-                    {...register("pagadorNome")}
+                    {...register('pagadorNome')}
                     error={errors.pagadorNome}
                     placeholder="Nome"
                   />
                   <div className="flex gap-2">
                     <Input
                       label="Endereço"
-                      {...register("pagadorEndereco")}
+                      {...register('pagadorEndereco')}
                       error={errors.pagadorEndereco}
                       placeholder="Endereço"
                     />
                     <Input
                       label="CNPJ/CPF"
-                      {...register("pagadorDocumento")}
+                      {...register('pagadorDocumento')}
                       error={errors.pagadorDocumento}
                       placeholder="Documento"
                     />

@@ -2,10 +2,10 @@ import type {
   ForwardRefRenderFunction,
   ReactNode,
   SelectHTMLAttributes,
-} from "react"
-import { forwardRef } from "react"
-import classnames from "classnames"
-import type { FieldError } from "react-hook-form"
+} from 'react'
+import { forwardRef } from 'react'
+import classnames from 'classnames'
+import type { FieldError } from 'react-hook-form'
 
 interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   label: string
@@ -16,7 +16,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
   { label, error, name, className, children, ...rest },
-  ref
+  ref,
 ) => {
   return (
     <div className="flex w-full flex-col text-sm">
@@ -25,12 +25,12 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
         name={name}
         ref={ref}
         className={classnames(
-          "w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 shadow-sm",
-          "disabled:cursor-not-allowed",
-          "focus:outline-none focus:ring-1",
+          'w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 shadow-sm',
+          'disabled:cursor-not-allowed',
+          'focus:outline-none focus:ring-1',
           error
-            ? "border-red-500 text-red-500 focus:border-red-500 focus:ring-red-500"
-            : "focus:border-sky-500 focus:ring-sky-500 "
+            ? 'border-red-500 text-red-500 focus:border-red-500 focus:ring-red-500'
+            : 'focus:border-sky-500 focus:ring-sky-500 ',
         )}
         {...rest}
       >

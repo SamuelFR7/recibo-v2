@@ -1,16 +1,15 @@
-import * as Dialog from "@radix-ui/react-dialog"
-import React, { useEffect, useState } from "react"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { z } from "zod"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { Farm } from "../../../Recibos"
-import { Select } from "../../Form/Select"
-import { Input } from "../../Form/Input"
-import { TextArea } from "../../Form/TextArea"
-import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { api } from "../../../services/api"
-import { X } from "phosphor-react"
-import { redirect } from "react-router-dom"
+import * as Dialog from '@radix-ui/react-dialog'
+import React, { useEffect, useState } from 'react'
+import { type SubmitHandler, useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { type Farm } from '../../../Recibos'
+import { Select } from '../../Form/Select'
+import { Input } from '../../Form/Input'
+import { TextArea } from '../../Form/TextArea'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { api } from '../../../services/api'
+import { X } from 'phosphor-react'
 
 interface CreateReciboDialogProps {
   fazendas: Farm[]
@@ -20,17 +19,17 @@ const createReciboSchema = z.object({
   fazenda: z
     .string()
     .transform((arg) => Number(arg))
-    .refine((arg) => arg > 0, { message: "Selecione uma fazenda" }),
+    .refine((arg) => arg > 0, { message: 'Selecione uma fazenda' }),
   data: z.string(),
   valor: z
     .number()
-    .min(0.01, { message: "Digite um valor acima de 0" })
+    .min(0.01, { message: 'Digite um valor acima de 0' })
     .multipleOf(0.01, {
-      message: "O valor pode ter no máximo duas casas decimais",
+      message: 'O valor pode ter no máximo duas casas decimais',
     }),
   beneficiarioNome: z
     .string()
-    .nonempty({ message: "Digite um nome" })
+    .nonempty({ message: 'Digite um nome' })
     .toUpperCase(),
   beneficiarioEndereco: z.string().toUpperCase().nullish(),
   beneficiarioDocumento: z
@@ -39,9 +38,9 @@ const createReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: "Digite um CPF ou CNPJ válido ou deixe vazio" }
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
-  pagadorNome: z.string().nonempty({ message: "Digite um nome" }).toUpperCase(),
+  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -49,7 +48,7 @@ const createReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: "Digite um CPF ou CNPJ válido ou deixe vazio" }
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
   historico: z.string().toUpperCase().nullish(),
   alreadyPrint: z.boolean().default(false),
@@ -69,7 +68,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
   } = useForm<CreateReciboSchema>({
     resolver: zodResolver(createReciboSchema),
     defaultValues: {
-      data: new Date().toISOString().split("T")[0].split("-").join("-"),
+      data: new Date().toISOString().split('T')[0].split('-').join('-'),
       alreadyPrint: false,
     },
   })
@@ -78,16 +77,16 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
   const mutation = useMutation({
     mutationFn: async (values: CreateReciboSchema) => {
       return api
-        .post("/api/recibo", {
-          Id: "0",
+        .post('/api/recibo', {
+          Id: '0',
           fazenda: {
             Id: values.fazenda,
-            Nome: ".",
-            PagadorNome: "",
-            PagadorEndereco: "",
-            PagadorDocumento: "",
+            Nome: '.',
+            PagadorNome: '',
+            PagadorEndereco: '',
+            PagadorDocumento: '',
           },
-          Numero: "0",
+          Numero: '0',
           Data: new Date(values.data),
           Valor: values.valor,
           Historico: values.historico,
@@ -101,13 +100,15 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
         .then((res) => res.data)
     },
     onSuccess: async (data, input) => {
-      await queryClient.invalidateQueries(["recibos"])
+      await queryClient.invalidateQueries({
+        queryKey: ['recibos'],
+      })
       setOpen(false)
       if (input.alreadyPrint) {
         window.open(
           `${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${
             data.id
-          }`
+          }`,
         )
       }
     },
@@ -121,7 +122,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
     reset()
   }, [open, reset])
 
-  const farm = watch("fazenda")
+  const farm = watch('fazenda')
 
   React.useEffect(() => {
     const selectedFarm = fazendas.find((item) => item.id === Number(farm))
@@ -130,9 +131,9 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
       return
     }
 
-    setValue("pagadorNome", selectedFarm?.pagadorNome)
-    setValue("pagadorEndereco", selectedFarm?.pagadorEndereco)
-    setValue("pagadorDocumento", selectedFarm?.pagadorDocumento)
+    setValue('pagadorNome', selectedFarm?.pagadorNome)
+    setValue('pagadorEndereco', selectedFarm?.pagadorEndereco)
+    setValue('pagadorDocumento', selectedFarm?.pagadorDocumento)
   }, [farm])
 
   return (
@@ -159,7 +160,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
               <div className="flex w-full items-center gap-3">
                 <Select
                   label="Fazenda"
-                  {...register("fazenda")}
+                  {...register('fazenda')}
                   error={errors.fazenda}
                   defaultValue={0}
                 >
@@ -177,14 +178,14 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
                 <Input
                   type="date"
                   label="Data"
-                  {...register("data", { valueAsDate: false })}
+                  {...register('data', { valueAsDate: false })}
                   error={errors.data}
                   placeholder="Data"
                 />
                 <Input
                   label="Valor"
                   type="number"
-                  {...register("valor", { valueAsNumber: true })}
+                  {...register('valor', { valueAsNumber: true })}
                   step=".01"
                   error={errors.valor}
                   placeholder="Digite um valor"
@@ -195,20 +196,20 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
                 <div className="flex flex-col gap-2 px-2">
                   <Input
                     label="Nome"
-                    {...register("beneficiarioNome")}
+                    {...register('beneficiarioNome')}
                     error={errors.beneficiarioNome}
                     placeholder="Nome"
                   />
                   <div className="flex gap-2">
                     <Input
                       label="Endereço"
-                      {...register("beneficiarioEndereco")}
+                      {...register('beneficiarioEndereco')}
                       error={errors.beneficiarioEndereco}
                       placeholder="Endereço"
                     />
                     <Input
                       label="CNPJ/CPF"
-                      {...register("beneficiarioDocumento")}
+                      {...register('beneficiarioDocumento')}
                       error={errors.beneficiarioDocumento}
                       placeholder="Documento"
                     />
@@ -220,20 +221,20 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
                 <div className="flex flex-col gap-2 px-2">
                   <Input
                     label="Nome"
-                    {...register("pagadorNome")}
+                    {...register('pagadorNome')}
                     error={errors.pagadorNome}
                     placeholder="Nome"
                   />
                   <div className="flex gap-2">
                     <Input
                       label="Endereço"
-                      {...register("pagadorEndereco")}
+                      {...register('pagadorEndereco')}
                       error={errors.pagadorEndereco}
                       placeholder="Endereço"
                     />
                     <Input
                       label="CNPJ/CPF"
-                      {...register("pagadorDocumento")}
+                      {...register('pagadorDocumento')}
                       error={errors.pagadorDocumento}
                       placeholder="Documento"
                     />
@@ -245,7 +246,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
                 <div className="px-2">
                   <TextArea
                     label=""
-                    {...register("historico")}
+                    {...register('historico')}
                     placeholder="Histórico"
                     error={errors.historico}
                     className="h-[7rem] resize-none"
@@ -257,7 +258,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
                   <input
                     type="checkbox"
                     onClick={() =>
-                      setValue("alreadyPrint", !watch("alreadyPrint"))
+                      setValue('alreadyPrint', !watch('alreadyPrint'))
                     }
                   />
                   <span>Imprimir ao salvar</span>

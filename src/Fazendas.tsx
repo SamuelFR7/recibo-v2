@@ -1,22 +1,22 @@
-import { useState } from "react"
-import { Container } from "./components/Container"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { api } from "./services/api"
-import { Farm } from "./Recibos"
-import { Loader } from "./components/Loader"
-import { Trash } from "phosphor-react"
-import { CreateFazendaDialog } from "./components/Dialogs/Fazendas/CreateFazenda"
-import { EditFazendaDialog } from "./components/Dialogs/Fazendas/EditFazenda"
+import { useState } from 'react'
+import { Container } from './components/Container'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { api } from './services/api'
+import { type Farm } from './Recibos'
+import { Loader } from './components/Loader'
+import { Trash } from 'phosphor-react'
+import { CreateFazendaDialog } from './components/Dialogs/Fazendas/CreateFazenda'
+import { EditFazendaDialog } from './components/Dialogs/Fazendas/EditFazenda'
 
 export default function Fazendas() {
-  const [search, setSearch] = useState("")
+  const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
-    queryKey: ["fazendas", search],
+    queryKey: ['fazendas', search],
     queryFn: async () => {
       return api
         .get<Farm[]>(
-          search ? `/api/fazenda?nome=${search.toUpperCase()}` : "/api/fazenda"
+          search ? `/api/fazenda?nome=${search.toUpperCase()}` : '/api/fazenda',
         )
         .then((res) => res.data)
     },
@@ -27,7 +27,9 @@ export default function Fazendas() {
       return api.delete(`/api/fazenda/${id}`).then((res) => res.data)
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(["fazendas"])
+      queryClient.invalidateQueries({
+        queryKey: ['fazendas'],
+      })
     },
   })
 
@@ -73,7 +75,7 @@ export default function Fazendas() {
                         <button
                           onClick={() =>
                             window.confirm(
-                              "Certeza que deseja deletar esse item?"
+                              'Certeza que deseja deletar esse item?',
                             ) && deleteFarm.mutate(fazenda.id)
                           }
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"

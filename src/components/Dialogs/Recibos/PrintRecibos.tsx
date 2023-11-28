@@ -1,11 +1,11 @@
-import * as Dialog from "@radix-ui/react-dialog"
-import { Farm } from "../../../Recibos"
-import { z } from "zod"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useEffect, useState } from "react"
-import { Select } from "../../Form/Select"
-import { X } from "phosphor-react"
+import * as Dialog from '@radix-ui/react-dialog'
+import type { Farm } from '../../../Recibos'
+import { z } from 'zod'
+import { type SubmitHandler, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useEffect, useState } from 'react'
+import { Select } from '../../Form/Select'
+import { X } from 'phosphor-react'
 
 interface PrintRecibosProps {
   fazendas: Farm[]
@@ -15,7 +15,7 @@ const printRecibosSchema = z.object({
   fazenda: z
     .string()
     .transform((arg) => Number(arg))
-    .refine((arg) => arg >= 0, { message: "Selecione uma fazenda" }),
+    .refine((arg) => arg >= 0, { message: 'Selecione uma fazenda' }),
 })
 
 type PrintRecibosSchema = z.infer<typeof printRecibosSchema>
@@ -38,7 +38,7 @@ export function PrintRecibos({ fazendas }: PrintRecibosProps) {
     window.open(
       `${
         import.meta.env.VITE_API_ADDRESS
-      }/api/relatoriorecibo/fazenda?FazendaId=${values.fazenda}`
+      }/api/relatoriorecibo/fazenda?FazendaId=${values.fazenda}`,
     )
   }
 
@@ -63,7 +63,7 @@ export function PrintRecibos({ fazendas }: PrintRecibosProps) {
             <div className="w-full">
               <Select
                 label="Fazenda"
-                {...register("fazenda")}
+                {...register('fazenda')}
                 error={errors.fazenda}
                 defaultValue={0}
               >
