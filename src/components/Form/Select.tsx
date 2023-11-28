@@ -19,13 +19,13 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
   ref,
 ) => {
   return (
-    <div className="flex flex-col text-sm w-full">
+    <div className="flex w-full flex-col text-sm">
       <label className="mb-1">{label}</label>
       <select
         name={name}
         ref={ref}
         className={classnames(
-          'px-3 py-2 rounded-md border border-slate-300 shadow-sm w-full bg-transparent',
+          'w-full rounded-md border border-slate-300 bg-transparent px-3 py-2 shadow-sm',
           'disabled:cursor-not-allowed',
           'focus:outline-none focus:ring-1',
           error

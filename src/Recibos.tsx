@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Loader } from './components/Loader'
-import { Printer, Pencil, Trash } from 'phosphor-react'
+import { Printer, Trash } from 'phosphor-react'
 import { api } from './services/api'
 import { Pagination } from './components/Pagination'
 import { Container } from './components/Container'
@@ -73,8 +73,10 @@ function Recibos() {
     mutationFn: async (id: number) => {
       return api.delete(`/api/recibo/${id}`).then((res) => res.data)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['recibos'])
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
+        queryKey: ['recibos'],
+      })
     },
   })
 
@@ -88,14 +90,14 @@ function Recibos() {
 
   return (
     <Container classNames="mt-12">
-      <div className="py-4 px-3 rounded-md border border-slate-200 shadow-md">
+      <div className="rounded-md border border-slate-200 px-3 py-4 shadow-md">
         <div className="flex justify-between">
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             type="text"
             placeholder="Pesquisar"
-            className="bg-transparent border hover:bg-slate-50 border-slate-200 rounded-md px-3 w-[60%] py-2"
+            className="w-[60%] rounded-md border border-slate-200 bg-transparent px-3 py-2 hover:bg-slate-50"
           />
           <div className="flex gap-3">
             <CreateReciboDialog fazendas={fazendasData} />
@@ -105,9 +107,9 @@ function Recibos() {
         </div>
         {data && !isLoading ? (
           <>
-            <table className="w-full mt-4">
+            <table className="mt-4 w-full">
               <thead>
-                <tr className="[&_th]:py-2 [&_th]:px-3 [&_th]:text-slate-500 [&_th]:font-medium [&_th]:text-sm border-b border-slate-200">
+                <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
                   <th className="text-left">FAZENDA</th>
                   <th className="text-left">BENEFICIARIO</th>
                   <th className="text-left">NUMERO</th>
@@ -118,10 +120,10 @@ function Recibos() {
                 </tr>
               </thead>
               <tbody>
-                {data.data.map((recibo, index) => {
+                {data.data.map((recibo) => {
                   return (
                     <tr
-                      className="[&_td]:p-3 [&_td]:font-normal [&_td]:text-md border-b border-slate-200"
+                      className="[&_td]:text-md border-b border-slate-200 [&_td]:p-3 [&_td]:font-normal"
                       key={recibo.id}
                     >
                       <td className="text-left">{recibo.fazenda.nome}</td>
@@ -142,17 +144,13 @@ function Recibos() {
                               }/api/relatoriorecibo/unico?id=${recibo.id}`,
                             )
                           }
-                          className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md"
+                          className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
                         >
                           <Printer size={16} weight="bold" />
                         </button>
                       </td>
                       <td className="text-center">
-                        <EditReciboDialog reciboData={recibo}>
-                          <button className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md">
-                            <Pencil size={16} weight="bold" />
-                          </button>
-                        </EditReciboDialog>
+                        <EditReciboDialog reciboData={recibo} />
                       </td>
                       <td className="text-center">
                         <button
@@ -161,7 +159,7 @@ function Recibos() {
                               'Certeza de que deseja deletar este item?',
                             ) && deleteRecibo.mutate(recibo.id)
                           }}
-                          className="bg-sky-400 hover:bg-sky-500 text-white py-2 px-3 rounded-md"
+                          className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
                         >
                           <Trash size={16} weight="bold" />
                         </button>
@@ -179,7 +177,7 @@ function Recibos() {
             />
           </>
         ) : (
-          <div className="h-screen w-full flex items-center justify-center">
+          <div className="flex h-screen w-full items-center justify-center">
             <Loader />
           </div>
         )}

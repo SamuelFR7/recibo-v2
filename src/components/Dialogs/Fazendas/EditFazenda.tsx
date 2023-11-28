@@ -1,12 +1,12 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as Dialog from '@radix-ui/react-dialog'
 import { useEffect, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '../../Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../../services/api'
-import { Farm } from '../../../Recibos'
+import { type Farm } from '../../../Recibos'
 import { Pencil } from 'phosphor-react'
 
 interface EditFazendaProps {
@@ -59,7 +59,9 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
       })
     },
     onSuccess: async () => {
-      await queryClient.invalidateQueries(['fazendas'])
+      await queryClient.invalidateQueries({
+        queryKey: ['fazendas'],
+      })
       setOpen(false)
     },
   })
@@ -80,14 +82,14 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="bg-sky-400 px-3 py-2 hover:bg-sky-500 text-white rounded-md font-medium">
+        <button className="rounded-md bg-sky-400 px-3 py-2 font-medium text-white hover:bg-sky-500">
           <Pencil size={16} weight="bold" />
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 grid place-items-center overflow-y-auto bg-black/30">
           <Dialog.Content className="min-w-[1000px] rounded-md bg-white p-5">
-            <Dialog.Title className="text-2xl font-bold mb-2">
+            <Dialog.Title className="mb-2 text-2xl font-bold">
               Editar fazenda
             </Dialog.Title>
             <form onSubmit={handleSubmit(handleEditFarm)}>
@@ -97,7 +99,7 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
                 error={errors.nome}
                 placeholder="Fazenda"
               />
-              <div className="flex flex-col gap-2 mt-3">
+              <div className="mt-3 flex flex-col gap-2">
                 <h2>Pagador</h2>
                 <div className="flex flex-col gap-2 px-2">
                   <Input
@@ -122,17 +124,17 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
                   </div>
                 </div>
               </div>
-              <div className="w-full flex justify-end mt-2 gap-3">
+              <div className="mt-2 flex w-full justify-end gap-3">
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="py-3 px-5 font-medium bg-gray-400 hover:bg-gray-500 text-white rounded-md"
+                  className="rounded-md bg-gray-400 px-5 py-3 font-medium text-white hover:bg-gray-500"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="py-3 px-5 font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-md"
+                  className="rounded-md bg-sky-500 px-5 py-3 font-medium text-white hover:bg-sky-600"
                 >
                   Salvar
                 </button>

@@ -1,18 +1,17 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import React, { ReactNode, useEffect, useState } from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { useEffect, useState } from 'react'
+import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '../../Form/Input'
 import { TextArea } from '../../Form/TextArea'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { api } from '../../../services/api'
-import { Receipt } from '../../../Recibos'
-import { X } from 'phosphor-react'
+import { type Receipt } from '../../../Recibos'
+import { Pencil, X } from 'phosphor-react'
 
 interface EditReciboDialogProps {
   reciboData: Receipt
-  children: ReactNode
 }
 
 const editReciboSchema = z.object({
@@ -47,15 +46,12 @@ const editReciboSchema = z.object({
       { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
     ),
   historico: z.string().toUpperCase().nullish(),
-  alreadyPrint: z.boolean().default(false)
+  alreadyPrint: z.boolean().default(false),
 })
 
 type EditReciboSchema = z.infer<typeof editReciboSchema>
 
-export function EditReciboDialog({
-  reciboData,
-  children,
-}: EditReciboDialogProps) {
+export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
   const [open, setOpen] = useState(false)
   const {
     register,
@@ -63,7 +59,7 @@ export function EditReciboDialog({
     formState: { errors },
     reset,
     setValue,
-    watch
+    watch,
   } = useForm<EditReciboSchema>({
     resolver: zodResolver(editReciboSchema),
     defaultValues: {
@@ -105,10 +101,16 @@ export function EditReciboDialog({
         .then((res) => res.data)
     },
     onSuccess: async (data, input) => {
-      await queryClient.invalidateQueries(['recibos'])
+      await queryClient.invalidateQueries({
+        queryKey: ['recibos'],
+      })
       setOpen(false)
       if (input.alreadyPrint) {
-        window.open(`${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${reciboData.id}`)
+        window.open(
+          `${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${
+            reciboData.id
+          }`,
+        )
       }
     },
   })
@@ -137,22 +139,26 @@ export function EditReciboDialog({
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
-      <Dialog.Trigger asChild>{children}</Dialog.Trigger>
+      <Dialog.Trigger asChild>
+        <button className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500">
+          <Pencil size={16} weight="bold" />
+        </button>
+      </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 grid place-items-center overflow-y-auto bg-black/30">
           <Dialog.Content className="min-w-[1000px] rounded-md bg-white p-5">
-            <div className="w-full flex items-center justify-between">
+            <div className="flex w-full items-center justify-between">
               <Dialog.Title className="text-2xl font-bold">
                 Novo recibo
               </Dialog.Title>
               <Dialog.Close asChild>
-                <button className="text-gray-800 flex items-center justify-center hover:bg-slate-200 bg-slate-100 h-[25px] w-[25px] rounded-md">
+                <button className="flex h-[25px] w-[25px] items-center justify-center rounded-md bg-slate-100 text-gray-800 hover:bg-slate-200">
                   <X />
                 </button>
               </Dialog.Close>
             </div>
             <form onSubmit={handleSubmit(editRecibo)}>
-              <div className="w-full items-center flex gap-3">
+              <div className="flex w-full items-center gap-3">
                 <Input
                   name="fazenda"
                   disabled
@@ -175,7 +181,7 @@ export function EditReciboDialog({
                   placeholder="Digite um valor"
                 />
               </div>
-              <div className="flex flex-col gap-2 mt-3">
+              <div className="mt-3 flex flex-col gap-2">
                 <h2>Beneficiário</h2>
                 <div className="flex flex-col gap-2 px-2">
                   <Input
@@ -200,7 +206,7 @@ export function EditReciboDialog({
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 mt-3">
+              <div className="mt-3 flex flex-col gap-2">
                 <h2>Pagador</h2>
                 <div className="flex flex-col gap-2 px-2">
                   <Input
@@ -225,7 +231,7 @@ export function EditReciboDialog({
                   </div>
                 </div>
               </div>
-              <div className="flex flex-col gap-2 mt-3">
+              <div className="mt-3 flex flex-col gap-2">
                 <h2>Histórico</h2>
                 <div className="px-2">
                   <TextArea
@@ -237,21 +243,26 @@ export function EditReciboDialog({
                   />
                 </div>
               </div>
-              <div className="w-full flex justify-end mt-2 gap-3">
-                <div className='flex items-center gap-2 font-medium'>
-                  <input type='checkbox' onClick={() => setValue('alreadyPrint', !watch('alreadyPrint'))} />
+              <div className="mt-2 flex w-full justify-end gap-3">
+                <div className="flex items-center gap-2 font-medium">
+                  <input
+                    type="checkbox"
+                    onClick={() =>
+                      setValue('alreadyPrint', !watch('alreadyPrint'))
+                    }
+                  />
                   <span>Imprimir ao salvar</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => setOpen(false)}
-                  className="py-3 px-5 font-medium bg-gray-400 hover:bg-gray-500 text-white rounded-md"
+                  className="rounded-md bg-gray-400 px-5 py-3 font-medium text-white hover:bg-gray-500"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="py-3 px-5 font-medium bg-sky-500 hover:bg-sky-600 text-white rounded-md"
+                  className="rounded-md bg-sky-500 px-5 py-3 font-medium text-white hover:bg-sky-600"
                 >
                   Salvar
                 </button>
