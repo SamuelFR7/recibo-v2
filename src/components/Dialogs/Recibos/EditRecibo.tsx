@@ -100,7 +100,7 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
         })
         .then((res) => res.data)
     },
-    onSuccess: async (data, input) => {
+    onSuccess: async (_, input) => {
       await queryClient.invalidateQueries({
         queryKey: ['recibos'],
       })

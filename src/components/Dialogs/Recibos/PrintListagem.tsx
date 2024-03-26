@@ -3,7 +3,7 @@ import { Farm } from '../../../Recibos'
 import { z } from 'zod'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Select } from '../../Form/Select'
 import { X } from 'phosphor-react'
 
