@@ -1,11 +1,11 @@
-import * as Dialog from "@radix-ui/react-dialog"
-import { Farm } from "../../../Recibos"
-import { z } from "zod"
-import { SubmitHandler, useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import React, { useEffect, useState } from "react"
-import { Select } from "../../Form/Select"
-import { X } from "phosphor-react"
+import * as Dialog from '@radix-ui/react-dialog'
+import { Farm } from '../../../Recibos'
+import { z } from 'zod'
+import { SubmitHandler, useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import React, { useEffect, useState } from 'react'
+import { Select } from '../../Form/Select'
+import { X } from 'phosphor-react'
 
 interface PrintListagemProps {
   fazendas: Farm[]
@@ -15,7 +15,7 @@ const printListagemSchema = z.object({
   fazenda: z
     .string()
     .transform((arg) => Number(arg))
-    .refine((arg) => arg >= 0, { message: "Selecione uma fazenda" }),
+    .refine((arg) => arg >= 0, { message: 'Selecione uma fazenda' }),
 })
 
 type PrintListagemSchema = z.infer<typeof printListagemSchema>
@@ -63,7 +63,7 @@ export function PrintListagem({ fazendas }: PrintListagemProps) {
             <div className="w-full">
               <Select
                 label="Fazenda"
-                {...register("fazenda")}
+                {...register('fazenda')}
                 error={errors.fazenda}
                 defaultValue={0}
               >

@@ -38,7 +38,7 @@ const createReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
   pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
@@ -48,7 +48,7 @@ const createReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
   historico: z.string().toUpperCase().nullish(),
   alreadyPrint: z.boolean().default(false),
@@ -108,7 +108,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
         window.open(
           `${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${
             data.id
-          }`,
+          }`
         )
       }
     },
@@ -134,6 +134,7 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
     setValue('pagadorNome', selectedFarm?.pagadorNome)
     setValue('pagadorEndereco', selectedFarm?.pagadorEndereco)
     setValue('pagadorDocumento', selectedFarm?.pagadorDocumento)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [farm])
 
   return (

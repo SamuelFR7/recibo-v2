@@ -56,7 +56,7 @@ function Recibos() {
         .get<ReceiptsRequest>(
           search
             ? `/api/recibo?nome=${search.toUpperCase()}&PageNumber=${currentPage}`
-            : `/api/recibo?PageNumber=${currentPage}`,
+            : `/api/recibo?PageNumber=${currentPage}`
         )
         .then((res) => res.data)
     },
@@ -141,7 +141,7 @@ function Recibos() {
                             window.open(
                               `${
                                 import.meta.env.VITE_API_ADDRESS
-                              }/api/relatoriorecibo/unico?id=${recibo.id}`,
+                              }/api/relatoriorecibo/unico?id=${recibo.id}`
                             )
                           }
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
@@ -156,7 +156,7 @@ function Recibos() {
                         <button
                           onClick={() => {
                             window.confirm(
-                              'Certeza de que deseja deletar este item?',
+                              'Certeza de que deseja deletar este item?'
                             ) && deleteRecibo.mutate(recibo.id)
                           }}
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"

@@ -17,7 +17,7 @@ const createFarmSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
 })
 
