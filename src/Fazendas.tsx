@@ -15,9 +15,9 @@ export default function Fazendas() {
     queryKey: ['fazendas', search],
     queryFn: async () => {
       return api
-        .get<Farm[]>(
-          search ? `/api/fazenda?nome=${search.toUpperCase()}` : '/api/fazenda',
-        )
+        .get<
+          Farm[]
+        >(search ? `/api/fazenda?nome=${search.toUpperCase()}` : '/api/fazenda')
         .then((res) => res.data)
     },
   })
@@ -75,7 +75,7 @@ export default function Fazendas() {
                         <button
                           onClick={() =>
                             window.confirm(
-                              'Certeza que deseja deletar esse item?',
+                              'Certeza que deseja deletar esse item?'
                             ) && deleteFarm.mutate(fazenda.id)
                           }
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"

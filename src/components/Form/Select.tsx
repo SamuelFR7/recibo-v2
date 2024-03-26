@@ -16,7 +16,7 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
 
 const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
   { label, error, name, className, children, ...rest },
-  ref,
+  ref
 ) => {
   return (
     <div className="flex w-full flex-col text-sm">
@@ -31,6 +31,7 @@ const SelectBase: ForwardRefRenderFunction<HTMLSelectElement, SelectProps> = (
           error
             ? 'border-red-500 text-red-500 focus:border-red-500 focus:ring-red-500'
             : 'focus:border-sky-500 focus:ring-sky-500 ',
+          className
         )}
         {...rest}
       >

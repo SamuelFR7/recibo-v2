@@ -38,7 +38,7 @@ export function PrintRecibos({ fazendas }: PrintRecibosProps) {
     window.open(
       `${
         import.meta.env.VITE_API_ADDRESS
-      }/api/relatoriorecibo/fazenda?FazendaId=${values.fazenda}`,
+      }/api/relatoriorecibo/fazenda?FazendaId=${values.fazenda}`
     )
   }
 

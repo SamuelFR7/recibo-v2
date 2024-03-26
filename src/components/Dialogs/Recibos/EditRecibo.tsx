@@ -33,7 +33,7 @@ const editReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
   pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
@@ -43,7 +43,7 @@ const editReciboSchema = z.object({
     .nullish()
     .refine(
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
-      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' },
+      { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
   historico: z.string().toUpperCase().nullish(),
   alreadyPrint: z.boolean().default(false),
@@ -100,7 +100,7 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
         })
         .then((res) => res.data)
     },
-    onSuccess: async (data, input) => {
+    onSuccess: async (_, input) => {
       await queryClient.invalidateQueries({
         queryKey: ['recibos'],
       })
@@ -109,7 +109,7 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
         window.open(
           `${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${
             reciboData.id
-          }`,
+          }`
         )
       }
     },
