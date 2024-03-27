@@ -1,27 +1,16 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Loader } from '../components/Loader'
+import { Loader } from '~/components/Loader'
 import { Printer, Trash } from 'phosphor-react'
-import { api } from '~/utils/services/api'
-import { Pagination } from '../components/Pagination'
-import { Container } from '../components/Container'
-import { CreateReciboDialog } from '../components/Dialogs/Recibos/CreateRecibo'
-import { PrintListagem } from '../components/Dialogs/Recibos/PrintListagem'
-import { PrintRecibos } from '../components/Dialogs/Recibos/PrintRecibos'
-import { EditReciboDialog } from '../components/Dialogs/Recibos/EditRecibo'
-import { Farm, Receipt } from '~/utils/types'
-
-interface ReceiptsRequest {
-  pageNumber: number
-  pageSize: number
-  firstPage: string
-  lastPage: string
-  totalPages: number
-  totalRecords: 5
-  nextPage: null
-  previousPage: null
-  data: Receipt[]
-}
+import { Pagination } from '~/components/Pagination'
+import { Container } from '~/components/Container'
+import { CreateReciboDialog } from '~/components/Dialogs/Recibos/CreateRecibo'
+import { PrintListagem } from '~/components/Dialogs/Recibos/PrintListagem'
+import { PrintRecibos } from '~/components/Dialogs/Recibos/PrintRecibos'
+import { EditReciboDialog } from '~/components/Dialogs/Recibos/EditRecibo'
+import { getReceipts } from '~/utils/api/get-receipts'
+import { getFarms } from '~/utils/api/get-farms'
+import { deleteReceipt } from '~/utils/api/delete-receipt'
 
 function Recibos() {
   const [search, setSearch] = useState('')
@@ -29,28 +18,19 @@ function Recibos() {
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['recibos', currentPage, search],
-    queryFn: async () => {
-      return api
-        .get<ReceiptsRequest>(
-          search
-            ? `/api/recibo?nome=${search.toUpperCase()}&PageNumber=${currentPage}`
-            : `/api/recibo?PageNumber=${currentPage}`
-        )
-        .then((res) => res.data)
-    },
+    queryFn: () => getReceipts({ search, page: currentPage }),
   })
 
   const { data: fazendasData, isLoading: fazendasLoading } = useQuery({
     queryKey: ['fazendas'],
-    queryFn: async () => {
-      return api.get<Farm[]>('/api/fazenda').then((res) => res.data)
-    },
+    queryFn: () =>
+      getFarms({
+        search: undefined,
+      }),
   })
 
-  const deleteRecibo = useMutation({
-    mutationFn: async (id: number) => {
-      return api.delete(`/api/recibo/${id}`).then((res) => res.data)
-    },
+  const { mutate: deleteReceiptFn } = useMutation({
+    mutationFn: deleteReceipt,
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['recibos'],
@@ -135,7 +115,7 @@ function Recibos() {
                           onClick={() => {
                             window.confirm(
                               'Certeza de que deseja deletar este item?'
-                            ) && deleteRecibo.mutate(recibo.id)
+                            ) && deleteReceiptFn({ id: recibo.id })
                           }}
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
                         >

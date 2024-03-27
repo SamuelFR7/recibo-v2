@@ -1,31 +1,23 @@
 import { useState } from 'react'
-import { Container } from '../components/Container'
+import { Container } from '~/components/Container'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api } from '~/utils/services/api'
-import { Loader } from '../components/Loader'
+import { Loader } from '~/components/Loader'
 import { Trash } from 'phosphor-react'
-import { CreateFazendaDialog } from '../components/Dialogs/Fazendas/CreateFazenda'
-import { EditFazendaDialog } from '../components/Dialogs/Fazendas/EditFazenda'
-import { Farm } from '~/utils/types'
+import { CreateFazendaDialog } from '~/components/Dialogs/Fazendas/CreateFazenda'
+import { EditFazendaDialog } from '~/components/Dialogs/Fazendas/EditFazenda'
+import { getFarms } from '~/utils/api/get-farms'
+import { deleteFarm } from '~/utils/api/delete-farm'
 
 export default function Fazendas() {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
   const { data, isLoading } = useQuery({
     queryKey: ['fazendas', search],
-    queryFn: async () => {
-      return api
-        .get<
-          Farm[]
-        >(search ? `/api/fazenda?nome=${search.toUpperCase()}` : '/api/fazenda')
-        .then((res) => res.data)
-    },
+    queryFn: () => getFarms({ search }),
   })
 
-  const deleteFarm = useMutation({
-    mutationFn: async (id: number) => {
-      return api.delete(`/api/fazenda/${id}`).then((res) => res.data)
-    },
+  const { mutate: deleteFarmFn } = useMutation({
+    mutationFn: deleteFarm,
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['fazendas'],
@@ -76,7 +68,10 @@ export default function Fazendas() {
                           onClick={() =>
                             window.confirm(
                               'Certeza que deseja deletar esse item?'
-                            ) && deleteFarm.mutate(fazenda.id)
+                            ) &&
+                            deleteFarmFn({
+                              id: fazenda.id,
+                            })
                           }
                           className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
                         >
