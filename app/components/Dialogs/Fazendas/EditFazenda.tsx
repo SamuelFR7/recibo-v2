@@ -5,8 +5,8 @@ import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '../../Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../../services/api'
-import { type Farm } from '../../../Recibos'
+import { api } from '~/utils/services/api'
+import { type Farm } from '~/utils/types'
 import { Pencil } from 'phosphor-react'
 
 interface EditFazendaProps {

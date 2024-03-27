@@ -1,44 +1,44 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import type { Farm } from '../../../Recibos'
+import { Farm } from '~/utils/types'
 import { z } from 'zod'
-import { type SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
 import { Select } from '../../Form/Select'
 import { X } from 'phosphor-react'
 
-interface PrintRecibosProps {
+interface PrintListagemProps {
   fazendas: Farm[]
 }
 
-const printRecibosSchema = z.object({
+const printListagemSchema = z.object({
   fazenda: z
     .string()
     .transform((arg) => Number(arg))
     .refine((arg) => arg >= 0, { message: 'Selecione uma fazenda' }),
 })
 
-type PrintRecibosSchema = z.infer<typeof printRecibosSchema>
+type PrintListagemSchema = z.infer<typeof printListagemSchema>
 
-export function PrintRecibos({ fazendas }: PrintRecibosProps) {
+export function PrintListagem({ fazendas }: PrintListagemProps) {
   const [open, setOpen] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-  } = useForm<PrintRecibosSchema>({
-    resolver: zodResolver(printRecibosSchema),
+  } = useForm<PrintListagemSchema>({
+    resolver: zodResolver(printListagemSchema),
     defaultValues: {
       fazenda: 0,
     },
   })
 
-  const handlePrintRecibos: SubmitHandler<PrintRecibosSchema> = (values) => {
+  const handlePrintListagem: SubmitHandler<PrintListagemSchema> = (values) => {
     window.open(
-      `${
-        import.meta.env.VITE_API_ADDRESS
-      }/api/relatoriorecibo/fazenda?FazendaId=${values.fazenda}`
+      `${import.meta.env.VITE_API_ADDRESS}/api/relatoriolistagem?FazendaId=${
+        values.fazenda
+      }`
     )
   }
 
@@ -50,16 +50,16 @@ export function PrintRecibos({ fazendas }: PrintRecibosProps) {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button className="rounded-md bg-sky-400 px-3 py-2 font-medium text-white hover:bg-sky-500">
-          Imprimir Recibos
+          Imprimir Listagem
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 bg-black/30" />
         <Dialog.Content className="fixed left-[50%] top-[50%] max-h-[85vh] w-full max-w-[1000px] translate-x-[-50%] translate-y-[-50%] rounded bg-white p-6">
           <Dialog.Title className="text-2xl font-bold">
-            Imprimir Recibos
+            Imprimir Listagem
           </Dialog.Title>
-          <form onSubmit={handleSubmit(handlePrintRecibos)}>
+          <form onSubmit={handleSubmit(handlePrintListagem)}>
             <div className="w-full">
               <Select
                 label="Fazenda"
@@ -93,7 +93,7 @@ export function PrintRecibos({ fazendas }: PrintRecibosProps) {
               </button>
             </div>
           </form>
-          <Dialog.Close>
+          <Dialog.Close asChild>
             <button className="absolute right-[10px] top-[10px] flex h-[25px] w-[25px] items-center justify-center rounded-md bg-slate-100 text-gray-800 hover:bg-slate-200">
               <X />
             </button>
