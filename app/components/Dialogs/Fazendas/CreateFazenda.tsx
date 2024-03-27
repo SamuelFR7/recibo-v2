@@ -5,7 +5,7 @@ import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '../../Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../../services/api'
+import { api } from '~/utils/services/api'
 
 const createFarmSchema = z.object({
   nome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),

@@ -1,12 +1,12 @@
 import { useState } from 'react'
-import { Container } from './components/Container'
+import { Container } from '../components/Container'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { api } from './services/api'
-import { type Farm } from './Recibos'
-import { Loader } from './components/Loader'
+import { api } from '~/utils/services/api'
+import { Loader } from '../components/Loader'
 import { Trash } from 'phosphor-react'
-import { CreateFazendaDialog } from './components/Dialogs/Fazendas/CreateFazenda'
-import { EditFazendaDialog } from './components/Dialogs/Fazendas/EditFazenda'
+import { CreateFazendaDialog } from '../components/Dialogs/Fazendas/CreateFazenda'
+import { EditFazendaDialog } from '../components/Dialogs/Fazendas/EditFazenda'
+import { Farm } from '~/utils/types'
 
 export default function Fazendas() {
   const [search, setSearch] = useState('')

@@ -1,20 +1,25 @@
 import * as Dialog from '@radix-ui/react-dialog'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { type Farm } from '~/utils/types'
+import { Select } from '../../Form/Select'
 import { Input } from '../../Form/Input'
 import { TextArea } from '../../Form/TextArea'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '../../../services/api'
-import { type Receipt } from '../../../Recibos'
-import { Pencil, X } from 'phosphor-react'
+import { api } from '~/utils/services/api'
+import { X } from 'phosphor-react'
 
-interface EditReciboDialogProps {
-  reciboData: Receipt
+interface CreateReciboDialogProps {
+  fazendas: Farm[]
 }
 
-const editReciboSchema = z.object({
+const createReciboSchema = z.object({
+  fazenda: z
+    .string()
+    .transform((arg) => Number(arg))
+    .refine((arg) => arg > 0, { message: 'Selecione uma fazenda' }),
   data: z.string(),
   valor: z
     .number()
@@ -49,45 +54,39 @@ const editReciboSchema = z.object({
   alreadyPrint: z.boolean().default(false),
 })
 
-type EditReciboSchema = z.infer<typeof editReciboSchema>
+type CreateReciboSchema = z.infer<typeof createReciboSchema>
 
-export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
+export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
   const [open, setOpen] = useState(false)
   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
-    setValue,
     watch,
-  } = useForm<EditReciboSchema>({
-    resolver: zodResolver(editReciboSchema),
+    setValue,
+  } = useForm<CreateReciboSchema>({
+    resolver: zodResolver(createReciboSchema),
     defaultValues: {
+      data: new Date().toISOString().split('T')[0].split('-').join('-'),
       alreadyPrint: false,
-      beneficiarioDocumento: reciboData.beneficiarioDocumento,
-      beneficiarioEndereco: reciboData.beneficiarioEndereco,
-      beneficiarioNome: reciboData.beneficiarioNome,
-      data: new Date(reciboData.data)
-        .toISOString()
-        .split('T')[0]
-        .split('-')
-        .join('-'),
-      historico: reciboData.historico,
-      pagadorDocumento: reciboData.pagadorDocumento,
-      pagadorEndereco: reciboData.pagadorEndereco,
-      pagadorNome: reciboData.pagadorNome,
-      valor: reciboData.valor,
     },
   })
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: async (values: EditReciboSchema) => {
+    mutationFn: async (values: CreateReciboSchema) => {
       return api
-        .put('/api/recibo', {
-          Id: reciboData.id,
-          Numero: reciboData.numero,
-          Fazenda: reciboData.fazenda,
+        .post('/api/recibo', {
+          Id: '0',
+          fazenda: {
+            Id: values.fazenda,
+            Nome: '.',
+            PagadorNome: '',
+            PagadorEndereco: '',
+            PagadorDocumento: '',
+          },
+          Numero: '0',
           Data: new Date(values.data),
           Valor: values.valor,
           Historico: values.historico,
@@ -100,7 +99,7 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
         })
         .then((res) => res.data)
     },
-    onSuccess: async (_, input) => {
+    onSuccess: async (data, input) => {
       await queryClient.invalidateQueries({
         queryKey: ['recibos'],
       })
@@ -108,40 +107,41 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
       if (input.alreadyPrint) {
         window.open(
           `${import.meta.env.VITE_API_ADDRESS}/api/relatoriorecibo/unico?id=${
-            reciboData.id
+            data.id
           }`
         )
       }
     },
   })
 
-  const editRecibo: SubmitHandler<EditReciboSchema> = async (values) => {
+  const createRecibo: SubmitHandler<CreateReciboSchema> = async (values) => {
     mutation.mutate(values)
   }
 
   useEffect(() => {
-    reset({
-      beneficiarioDocumento: reciboData.beneficiarioDocumento,
-      beneficiarioEndereco: reciboData.beneficiarioEndereco,
-      beneficiarioNome: reciboData.beneficiarioNome,
-      data: new Date(reciboData.data)
-        .toISOString()
-        .split('T')[0]
-        .split('-')
-        .join('-'),
-      historico: reciboData.historico,
-      pagadorDocumento: reciboData.pagadorDocumento,
-      pagadorEndereco: reciboData.pagadorEndereco,
-      pagadorNome: reciboData.pagadorNome,
-      valor: reciboData.valor,
-    })
-  }, [open, reset, reciboData])
+    reset()
+  }, [open, reset])
+
+  const farm = watch('fazenda')
+
+  React.useEffect(() => {
+    const selectedFarm = fazendas.find((item) => item.id === Number(farm))
+
+    if (!selectedFarm) {
+      return
+    }
+
+    setValue('pagadorNome', selectedFarm?.pagadorNome)
+    setValue('pagadorEndereco', selectedFarm?.pagadorEndereco)
+    setValue('pagadorDocumento', selectedFarm?.pagadorDocumento)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [farm])
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
-        <button className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500">
-          <Pencil size={16} weight="bold" />
+        <button className="rounded-md bg-sky-400 px-3 py-2 font-medium text-white hover:bg-sky-500">
+          Adicionar Recibo
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
@@ -157,14 +157,25 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
                 </button>
               </Dialog.Close>
             </div>
-            <form onSubmit={handleSubmit(editRecibo)}>
+            <form onSubmit={handleSubmit(createRecibo)}>
               <div className="flex w-full items-center gap-3">
-                <Input
-                  name="fazenda"
-                  disabled
-                  value={reciboData.fazenda.nome}
+                <Select
                   label="Fazenda"
-                />
+                  {...register('fazenda')}
+                  error={errors.fazenda}
+                  defaultValue={0}
+                >
+                  <option value={0} disabled>
+                    Selecione
+                  </option>
+                  {fazendas.map((fazenda) => {
+                    return (
+                      <option key={fazenda.id} value={fazenda.id}>
+                        {fazenda.nome}
+                      </option>
+                    )
+                  })}
+                </Select>
                 <Input
                   type="date"
                   label="Data"

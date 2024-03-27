@@ -1,37 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Loader } from './components/Loader'
+import { Loader } from '../components/Loader'
 import { Printer, Trash } from 'phosphor-react'
-import { api } from './services/api'
-import { Pagination } from './components/Pagination'
-import { Container } from './components/Container'
-import { CreateReciboDialog } from './components/Dialogs/Recibos/CreateRecibo'
-import { PrintListagem } from './components/Dialogs/Recibos/PrintListagem'
-import { PrintRecibos } from './components/Dialogs/Recibos/PrintRecibos'
-import { EditReciboDialog } from './components/Dialogs/Recibos/EditRecibo'
-
-export interface Farm {
-  id: number
-  nome: string
-  pagadorNome: string
-  pagadorEndereco: string
-  pagadorDocumento: string
-}
-
-export interface Receipt {
-  id: number
-  fazenda: Farm
-  numero: number
-  data: Date
-  valor: number
-  historico: string
-  beneficiarioNome: string
-  beneficiarioEndereco: string
-  beneficiarioDocumento: string
-  pagadorNome: string
-  pagadorEndereco: string
-  pagadorDocumento: string
-}
+import { api } from '~/utils/services/api'
+import { Pagination } from '../components/Pagination'
+import { Container } from '../components/Container'
+import { CreateReciboDialog } from '../components/Dialogs/Recibos/CreateRecibo'
+import { PrintListagem } from '../components/Dialogs/Recibos/PrintListagem'
+import { PrintRecibos } from '../components/Dialogs/Recibos/PrintRecibos'
+import { EditReciboDialog } from '../components/Dialogs/Recibos/EditRecibo'
+import { Farm, Receipt } from '~/utils/types'
 
 interface ReceiptsRequest {
   pageNumber: number
