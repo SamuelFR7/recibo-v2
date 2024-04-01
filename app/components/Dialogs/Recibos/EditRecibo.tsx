@@ -6,9 +6,9 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Input } from '../../Form/Input'
 import { TextArea } from '../../Form/TextArea'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '~/utils/services/api'
 import { type Receipt } from '~/utils/types'
 import { Pencil, X } from 'phosphor-react'
+import { updateReceipt } from '~/utils/api/update-receipt'
 
 interface EditReciboDialogProps {
   reciboData: Receipt
@@ -24,7 +24,7 @@ const editReciboSchema = z.object({
     }),
   beneficiarioNome: z
     .string()
-    .nonempty({ message: 'Digite um nome' })
+    .min(1, { message: 'Digite um nome' })
     .toUpperCase(),
   beneficiarioEndereco: z.string().toUpperCase().nullish(),
   beneficiarioDocumento: z
@@ -35,7 +35,7 @@ const editReciboSchema = z.object({
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
       { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
-  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
+  pagadorNome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -82,24 +82,21 @@ export function EditReciboDialog({ reciboData }: EditReciboDialogProps) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: async (values: EditReciboSchema) => {
-      return api
-        .put('/api/recibo', {
-          Id: reciboData.id,
-          Numero: reciboData.numero,
-          Fazenda: reciboData.fazenda,
-          Data: new Date(values.data),
-          Valor: values.valor,
-          Historico: values.historico,
-          BeneficiarioNome: values.beneficiarioNome,
-          BeneficiarioEndereco: values.beneficiarioEndereco,
-          BeneficiarioDocumento: values.beneficiarioDocumento,
-          PagadorNome: values.pagadorNome,
-          PagadorEndereco: values.pagadorEndereco,
-          PagadorDocumento: values.pagadorDocumento,
-        })
-        .then((res) => res.data)
-    },
+    mutationFn: (values: EditReciboSchema) =>
+      updateReceipt({
+        id: reciboData.id,
+        number: reciboData.numero,
+        farm: reciboData.fazenda,
+        date: new Date(values.data),
+        payerName: values.pagadorNome,
+        recipientName: values.beneficiarioNome,
+        value: values.valor,
+        historic: values.historico,
+        payerAddress: values.pagadorEndereco,
+        payerDocument: values.pagadorDocumento,
+        recipientAddress: values.beneficiarioEndereco,
+        recipientDocument: values.beneficiarioDocumento,
+      }),
     onSuccess: async (_, input) => {
       await queryClient.invalidateQueries({
         queryKey: ['recibos'],

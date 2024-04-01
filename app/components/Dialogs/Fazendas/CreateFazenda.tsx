@@ -5,11 +5,11 @@ import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '../../Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '~/utils/services/api'
+import { createFarm } from '~/utils/api/create-farm'
 
 const createFarmSchema = z.object({
-  nome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
-  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
+  nome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
+  pagadorNome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -37,15 +37,13 @@ export function CreateFazendaDialog() {
   })
 
   const mutation = useMutation({
-    mutationFn: async (values: CreateFarmSchema) => {
-      return api.post('/api/fazenda', {
-        id: 0,
-        Nome: values.nome,
-        PagadorNome: values.pagadorNome,
-        PagadorEndereco: values.pagadorEndereco,
-        PagadorDocumento: values.pagadorDocumento,
-      })
-    },
+    mutationFn: (values: CreateFarmSchema) =>
+      createFarm({
+        name: values.nome,
+        payerAddress: values.pagadorEndereco,
+        payerDocument: values.pagadorDocumento,
+        payerName: values.pagadorNome,
+      }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['fazendas'],

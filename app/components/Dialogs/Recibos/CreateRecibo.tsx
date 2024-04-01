@@ -8,8 +8,8 @@ import { Select } from '../../Form/Select'
 import { Input } from '../../Form/Input'
 import { TextArea } from '../../Form/TextArea'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '~/utils/services/api'
 import { X } from 'phosphor-react'
+import { createReceipt } from '~/utils/api/create-receipt'
 
 interface CreateReciboDialogProps {
   fazendas: Farm[]
@@ -29,7 +29,7 @@ const createReciboSchema = z.object({
     }),
   beneficiarioNome: z
     .string()
-    .nonempty({ message: 'Digite um nome' })
+    .min(1, { message: 'Digite um nome' })
     .toUpperCase(),
   beneficiarioEndereco: z.string().toUpperCase().nullish(),
   beneficiarioDocumento: z
@@ -40,7 +40,7 @@ const createReciboSchema = z.object({
       (arg) => arg?.length === 0 || arg?.length === 11 || arg?.length === 14,
       { message: 'Digite um CPF ou CNPJ válido ou deixe vazio' }
     ),
-  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
+  pagadorNome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -75,30 +75,19 @@ export function CreateReciboDialog({ fazendas }: CreateReciboDialogProps) {
   const queryClient = useQueryClient()
 
   const mutation = useMutation({
-    mutationFn: async (values: CreateReciboSchema) => {
-      return api
-        .post('/api/recibo', {
-          Id: '0',
-          fazenda: {
-            Id: values.fazenda,
-            Nome: '.',
-            PagadorNome: '',
-            PagadorEndereco: '',
-            PagadorDocumento: '',
-          },
-          Numero: '0',
-          Data: new Date(values.data),
-          Valor: values.valor,
-          Historico: values.historico,
-          BeneficiarioNome: values.beneficiarioNome,
-          BeneficiarioEndereco: values.beneficiarioEndereco,
-          BeneficiarioDocumento: values.beneficiarioDocumento,
-          PagadorNome: values.pagadorNome,
-          PagadorEndereco: values.pagadorEndereco,
-          PagadorDocumento: values.pagadorDocumento,
-        })
-        .then((res) => res.data)
-    },
+    mutationFn: (values: CreateReciboSchema) =>
+      createReceipt({
+        farmId: values.fazenda,
+        date: new Date(values.data),
+        value: values.valor,
+        historic: values.historico,
+        recipientName: values.beneficiarioNome,
+        recipientAddress: values.beneficiarioEndereco,
+        recipientDocument: values.beneficiarioDocumento,
+        payerName: values.pagadorNome,
+        payerAddress: values.pagadorEndereco,
+        payerDocument: values.pagadorDocumento,
+      }),
     onSuccess: async (data, input) => {
       await queryClient.invalidateQueries({
         queryKey: ['recibos'],

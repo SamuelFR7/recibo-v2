@@ -5,17 +5,17 @@ import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { Input } from '../../Form/Input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { api } from '~/utils/services/api'
 import { type Farm } from '~/utils/types'
 import { Pencil } from 'phosphor-react'
+import { updateFarm } from '~/utils/api/update-farm'
 
 interface EditFazendaProps {
   fazendaData: Farm
 }
 
 const editFarmSchema = z.object({
-  nome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
-  pagadorNome: z.string().nonempty({ message: 'Digite um nome' }).toUpperCase(),
+  nome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
+  pagadorNome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
   pagadorDocumento: z
     .string()
@@ -49,15 +49,13 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
   })
 
   const mutation = useMutation({
-    mutationFn: async (values: EditFarmSchema) => {
-      return api.put('/api/fazenda', {
+    mutationFn: (values: EditFarmSchema) =>
+      updateFarm({
         id: fazendaData.id,
-        Nome: values.nome,
-        PagadorNome: values.pagadorNome,
-        PagadorEndereco: values.pagadorEndereco,
-        PagadorDocumento: values.pagadorDocumento,
-      })
-    },
+        payerName: values.pagadorNome,
+        payerAddress: values.pagadorEndereco,
+        payerDocument: values.pagadorDocumento,
+      }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
         queryKey: ['fazendas'],
