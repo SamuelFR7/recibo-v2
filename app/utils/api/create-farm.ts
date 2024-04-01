@@ -1,4 +1,4 @@
-import { api } from '../services/api'
+import { api } from '../axios'
 
 type CreateFarmRequest = {
   name: string

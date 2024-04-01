@@ -1,15 +1,15 @@
-import { api } from '../services/api'
+import { api } from '../axios'
 import { Receipt } from '../types'
 
-type GetReceiptsResponse = {
+export type GetReceiptsResponse = {
   pageNumber: number
   pageSize: number
   firstPage: string
   lastPage: string
   totalPages: number
-  totalRecords: 5
-  nextPage: null
-  previousPage: null
+  totalRecords: number
+  nextPage: string | null
+  previousPage: string | null
   data: Receipt[]
 }
 
