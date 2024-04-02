@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CreateFazendaDialog } from '~/components/dialogs/fazendas/create-fazenda'
 import { EditFazendaDialog } from '~/components/dialogs/fazendas/edit-fazenda'
@@ -14,9 +13,13 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import { Trash } from 'lucide-react'
+import { useSearchParams } from '@remix-run/react'
 
 export default function Fazendas() {
-  const [search, setSearch] = useState('')
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const search = searchParams.get('q') || undefined
+
   const queryClient = useQueryClient()
   const { data: result, isLoading: isLoadingFarms } = useQuery({
     queryKey: ['fazendas', search],
@@ -32,6 +35,14 @@ export default function Fazendas() {
     },
   })
 
+  function handleSearch(v: string) {
+    setSearchParams((prev) => {
+      prev.set('q', v)
+
+      return prev
+    })
+  }
+
   return (
     <>
       <div className="flex items-center">
@@ -39,8 +50,8 @@ export default function Fazendas() {
       </div>
       <div className="flex flex-col items-center gap-4 md:flex-row">
         <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          defaultValue={search}
+          onChange={(e) => handleSearch(e.target.value)}
           type="text"
           placeholder="Pesquisar..."
         />
