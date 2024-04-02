@@ -8,6 +8,7 @@ import {
 import './tailwind.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Header } from './components/Header'
+import { Loader2 } from 'lucide-react'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -39,5 +40,9 @@ export default function App() {
 }
 
 export function HydrateFallback() {
-  return <p>Loading...</p>
+  return (
+    <div className="flex h-screen w-full items-center justify-center">
+      <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
+    </div>
+  )
 }

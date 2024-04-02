@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { Loader } from '~/components/Loader'
 import { Printer, Trash } from 'phosphor-react'
 import { Pagination } from '~/components/Pagination'
 import { Container } from '~/components/Container'
@@ -11,22 +10,25 @@ import { EditReciboDialog } from '~/components/Dialogs/Recibos/EditRecibo'
 import { getReceipts } from '~/utils/api/get-receipts'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteReceipt } from '~/utils/api/delete-receipt'
+import { useLoaderData } from '@remix-run/react'
 
-function Recibos() {
+export async function clientLoader() {
+  const farms = await getFarms({ search: undefined })
+
+  return {
+    farms,
+  }
+}
+
+export default function Recibos() {
+  const data = useLoaderData<typeof clientLoader>()
   const [search, setSearch] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
   const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery({
+
+  const { data: result, isLoading: isLoadingReceipts } = useQuery({
     queryKey: ['recibos', currentPage, search],
     queryFn: () => getReceipts({ search, page: currentPage }),
-  })
-
-  const { data: fazendasData, isLoading: fazendasLoading } = useQuery({
-    queryKey: ['fazendas'],
-    queryFn: () =>
-      getFarms({
-        search: undefined,
-      }),
   })
 
   const { mutate: deleteReceiptFn } = useMutation({
@@ -37,14 +39,6 @@ function Recibos() {
       })
     },
   })
-
-  if (!fazendasData || fazendasLoading) {
-    return (
-      <div className="flex h-screen w-full items-center justify-center">
-        <Loader />
-      </div>
-    )
-  }
 
   return (
     <Container classNames="mt-12">
@@ -58,27 +52,29 @@ function Recibos() {
             className="w-[60%] rounded-md border border-slate-200 bg-transparent px-3 py-2 hover:bg-slate-50"
           />
           <div className="flex gap-3">
-            <CreateReciboDialog fazendas={fazendasData} />
-            <PrintListagem fazendas={fazendasData} />
-            <PrintRecibos fazendas={fazendasData} />
+            <CreateReciboDialog fazendas={data.farms} />
+            <PrintListagem fazendas={data.farms} />
+            <PrintRecibos fazendas={data.farms} />
           </div>
         </div>
-        {data && !isLoading ? (
-          <>
-            <table className="mt-4 w-full">
-              <thead>
-                <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
-                  <th className="text-left">FAZENDA</th>
-                  <th className="text-left">BENEFICIARIO</th>
-                  <th className="text-left">NUMERO</th>
-                  <th className="text-left">VALOR</th>
-                  <th className="text-center">IMPRIMIR</th>
-                  <th className="text-center">EDITAR</th>
-                  <th className="text-center">EXCLUIR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.data.map((recibo) => {
+        <>
+          <table className="mt-4 w-full">
+            <thead>
+              <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
+                <th className="text-left">FAZENDA</th>
+                <th className="text-left">BENEFICIARIO</th>
+                <th className="text-left">NUMERO</th>
+                <th className="text-left">VALOR</th>
+                <th className="text-center">IMPRIMIR</th>
+                <th className="text-center">EDITAR</th>
+                <th className="text-center">EXCLUIR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoadingReceipts && !result && <h1>Skeleton</h1>}
+
+              {result &&
+                result.data.map((recibo) => {
                   return (
                     <tr
                       className="[&_td]:text-md border-b border-slate-200 [&_td]:p-3 [&_td]:font-normal"
@@ -125,23 +121,18 @@ function Recibos() {
                     </tr>
                   )
                 })}
-              </tbody>
-            </table>
+            </tbody>
+          </table>
+          {result && (
             <Pagination
               onPageChange={setCurrentPage}
-              totalCountOfRegisters={data.totalRecords}
+              totalCountOfRegisters={result.totalRecords}
               currentPage={currentPage}
-              registersPerPage={data.pageSize}
+              registersPerPage={result.pageSize}
             />
-          </>
-        ) : (
-          <div className="flex h-screen w-full items-center justify-center">
-            <Loader />
-          </div>
-        )}
+          )}
+        </>
       </div>
     </Container>
   )
 }
-
-export default Recibos

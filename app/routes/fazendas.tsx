@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Container } from '~/components/Container'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Loader } from '~/components/Loader'
 import { Trash } from 'phosphor-react'
 import { CreateFazendaDialog } from '~/components/Dialogs/Fazendas/CreateFazenda'
 import { EditFazendaDialog } from '~/components/Dialogs/Fazendas/EditFazenda'
@@ -11,7 +10,7 @@ import { deleteFarm } from '~/utils/api/delete-farm'
 export default function Fazendas() {
   const [search, setSearch] = useState('')
   const queryClient = useQueryClient()
-  const { data, isLoading } = useQuery({
+  const { data: result, isLoading: isLoadingFarms } = useQuery({
     queryKey: ['fazendas', search],
     queryFn: () => getFarms({ search }),
   })
@@ -38,20 +37,23 @@ export default function Fazendas() {
           />
           <CreateFazendaDialog />
         </div>
-        {data && !isLoading ? (
-          <>
-            <table className="mt-4 w-full">
-              <thead>
-                <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
-                  <th className="text-left">NOME</th>
-                  <th className="text-left">NOME PAGADOR</th>
-                  <th className="text-left">ENDERECO PAGADOR</th>
-                  <th className="text-center">EDITAR</th>
-                  <th className="text-center">EXCLUIR</th>
-                </tr>
-              </thead>
-              <tbody>
-                {data.map((fazenda) => {
+
+        <>
+          <table className="mt-4 w-full">
+            <thead>
+              <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
+                <th className="text-left">NOME</th>
+                <th className="text-left">NOME PAGADOR</th>
+                <th className="text-left">ENDERECO PAGADOR</th>
+                <th className="text-center">EDITAR</th>
+                <th className="text-center">EXCLUIR</th>
+              </tr>
+            </thead>
+            <tbody>
+              {isLoadingFarms && !result && <h1>Skeleton</h1>}
+
+              {result &&
+                result.map((fazenda) => {
                   return (
                     <tr
                       key={fazenda.id}
@@ -81,14 +83,9 @@ export default function Fazendas() {
                     </tr>
                   )
                 })}
-              </tbody>
-            </table>
-          </>
-        ) : (
-          <div className="flex h-screen w-full items-center justify-center">
-            <Loader />
-          </div>
-        )}
+            </tbody>
+          </table>
+        </>
       </div>
     </Container>
   )
