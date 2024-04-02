@@ -3,7 +3,6 @@ import { useState } from 'react'
 import { Pagination } from '~/components/pagination'
 import { PrintListagem } from '~/components/dialogs/recibos/print-listagem'
 import { PrintRecibos } from '~/components/dialogs/recibos/print-recibos'
-import { EditReciboDialog } from '~/components/dialogs/recibos/edit-recibo'
 import { getReceipts } from '~/utils/api/get-receipts'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteReceipt } from '~/utils/api/delete-receipt'
@@ -18,8 +17,9 @@ import {
   TableRow,
 } from '~/components/ui/table'
 import { cn, formatValue } from '~/utils/utils'
-import { PlusCircle, Printer, Trash } from 'lucide-react'
-import { buttonVariants } from '~/components/ui/button'
+import { Pencil, PlusCircle, Printer, Trash } from 'lucide-react'
+import { Button, buttonVariants } from '~/components/ui/button'
+import { env } from '~/utils/env'
 
 export async function clientLoader() {
   const farms = await getFarms({ search: undefined })
@@ -94,33 +94,43 @@ export default function Recibos() {
                     {formatValue(receipt.valor)}
                   </TableCell>
                   <TableCell className="text-center">
-                    <button
+                    <Button
                       onClick={() =>
                         window.open(
-                          `${
-                            import.meta.env.VITE_API_ADDRESS
-                          }/api/relatoriorecibo/unico?id=${receipt.id}`
+                          `${env.VITE_API_URL}/api/relatoriorecibo/unico?id=${receipt.id}`
                         )
                       }
-                      className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
+                      size="icon"
+                      variant="outline"
                     >
-                      <Printer size={16} />
-                    </button>
+                      <Printer className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                   <TableCell className="text-center">
-                    <EditReciboDialog reciboData={receipt} />
+                    <Link
+                      to={`/recibos/${receipt.id}`}
+                      className={cn(
+                        buttonVariants({
+                          size: 'icon',
+                          variant: 'outline',
+                        })
+                      )}
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Link>
                   </TableCell>
                   <TableCell className="text-center">
-                    <button
+                    <Button
                       onClick={() => {
                         window.confirm(
                           'Certeza de que deseja deletar este item?'
                         ) && deleteReceiptFn({ id: receipt.id })
                       }}
-                      className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
+                      variant="outline"
+                      size="icon"
                     >
-                      <Trash size={16} />
-                    </button>
+                      <Trash className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
