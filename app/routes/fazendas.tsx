@@ -1,11 +1,19 @@
 import { useState } from 'react'
-import { Container } from '~/components/container'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Trash } from 'phosphor-react'
 import { CreateFazendaDialog } from '~/components/dialogs/fazendas/create-fazenda'
 import { EditFazendaDialog } from '~/components/dialogs/fazendas/edit-fazenda'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteFarm } from '~/utils/api/delete-farm'
+import { Input } from '~/components/ui/input'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '~/components/ui/table'
+import { Trash } from 'lucide-react'
 
 export default function Fazendas() {
   const [search, setSearch] = useState('')
@@ -25,68 +33,73 @@ export default function Fazendas() {
   })
 
   return (
-    <Container classNames="mt-12">
-      <div className="rounded-md border border-slate-200 px-3 py-4 shadow-md">
-        <div className="flex justify-between">
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder="Pesquisar"
-            className="w-[85%] rounded-md border border-slate-200 bg-transparent px-3 py-2 hover:bg-slate-50"
-          />
-          <CreateFazendaDialog />
-        </div>
-
-        <>
-          <table className="mt-4 w-full">
-            <thead>
-              <tr className="border-b border-slate-200 [&_th]:px-3 [&_th]:py-2 [&_th]:text-sm [&_th]:font-medium [&_th]:text-slate-500">
-                <th className="text-left">NOME</th>
-                <th className="text-left">NOME PAGADOR</th>
-                <th className="text-left">ENDERECO PAGADOR</th>
-                <th className="text-center">EDITAR</th>
-                <th className="text-center">EXCLUIR</th>
-              </tr>
-            </thead>
-            <tbody>
-              {isLoadingFarms && !result && <h1>Skeleton</h1>}
-
-              {result &&
-                result.map((fazenda) => {
-                  return (
-                    <tr
-                      key={fazenda.id}
-                      className="[&_td]:text-md border-b border-slate-200 [&_td]:p-3 [&_td]:font-normal"
-                    >
-                      <td className="text-left">{fazenda.nome}</td>
-                      <td className="text-left">{fazenda.pagadorNome}</td>
-                      <td className="text-left">{fazenda.pagadorEndereco}</td>
-                      <td className="text-center">
-                        <EditFazendaDialog fazendaData={fazenda} />
-                      </td>
-                      <td className="text-center">
-                        <button
-                          onClick={() =>
-                            window.confirm(
-                              'Certeza que deseja deletar esse item?'
-                            ) &&
-                            deleteFarmFn({
-                              id: fazenda.id,
-                            })
-                          }
-                          className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
-                        >
-                          <Trash size={16} weight="bold" />
-                        </button>
-                      </td>
-                    </tr>
-                  )
-                })}
-            </tbody>
-          </table>
-        </>
+    <>
+      <div className="flex items-center">
+        <h1 className="text-lg font-semibold md:text-2xl">Fazendas</h1>
       </div>
-    </Container>
+      <div className="flex flex-col items-center gap-4 md:flex-row">
+        <Input
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          type="text"
+          placeholder="Pesquisar..."
+        />
+        <CreateFazendaDialog />
+      </div>
+      <div className="rounded-md border">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-[230px]">Nome</TableHead>
+              <TableHead className="w-[350px]">Nome Pagador</TableHead>
+              <TableHead className="w-[200px]">Endereço Pagador</TableHead>
+              <TableHead className="w-[120px] text-center">Editar</TableHead>
+              <TableHead className="w-[120px] text-center">Excluir</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {isLoadingFarms && !result && <h1>Skeleton</h1>}
+
+            {result &&
+              result.map((farm) => (
+                <TableRow key={farm.id}>
+                  <TableCell>{farm.nome}</TableCell>
+                  <TableCell>{farm.pagadorNome}</TableCell>
+                  <TableCell>{farm.pagadorEndereco}</TableCell>
+                  <TableCell className="text-center">
+                    <EditFazendaDialog fazendaData={farm} />
+                  </TableCell>
+                  <TableCell className="text-center">
+                    <button
+                      onClick={() =>
+                        window.confirm(
+                          'Certeza que deseja deletar esse item?'
+                        ) &&
+                        deleteFarmFn({
+                          id: farm.id,
+                        })
+                      }
+                      className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
+                    >
+                      <Trash size={16} />
+                    </button>
+                  </TableCell>
+                </TableRow>
+              ))}
+
+            {result && result.length === 0 && (
+              <TableRow>
+                <TableCell
+                  colSpan={5}
+                  className="py-10 text-center text-muted-foreground"
+                >
+                  Nenhum resultado encontrado
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    </>
   )
 }

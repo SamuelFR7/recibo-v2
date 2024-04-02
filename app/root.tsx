@@ -33,8 +33,12 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
-      <Outlet />
+      <div className="flex min-h-screen w-full flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6">
+          <Outlet />
+        </main>
+      </div>
     </QueryClientProvider>
   )
 }
