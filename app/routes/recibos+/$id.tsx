@@ -119,7 +119,7 @@ export default function EditReceiptPage() {
   return (
     <>
       <div className="flex items-center">
-        <h1 className="text-lg font-semibold md:text-2xl">Novo Recibo</h1>
+        <h1 className="text-lg font-semibold md:text-2xl">Atualizar Recibo</h1>
       </div>
       <Form {...form}>
         <form

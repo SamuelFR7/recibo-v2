@@ -33,7 +33,7 @@ export function Header() {
       <Sheet>
         <SheetTrigger asChild>
           <Button variant="ghost" size="icon" className="shrink-0 md:hidden">
-            <Menu className="h-5 w-5 text-black" />
+            <Menu className="h-5 w-5 text-primary-foreground" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>

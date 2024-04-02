@@ -60,7 +60,7 @@ export function PrintListDialog({ farms }: PrintListDialogProps) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Imprimir listagem</DialogTitle>
+          <DialogTitle>Imprimir Listagem</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form
