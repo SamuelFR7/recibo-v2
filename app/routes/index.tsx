@@ -1,14 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Pagination } from '~/components/pagination'
-import { CreateReciboDialog } from '~/components/dialogs/recibos/create-recibo'
 import { PrintListagem } from '~/components/dialogs/recibos/print-listagem'
 import { PrintRecibos } from '~/components/dialogs/recibos/print-recibos'
 import { EditReciboDialog } from '~/components/dialogs/recibos/edit-recibo'
 import { getReceipts } from '~/utils/api/get-receipts'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteReceipt } from '~/utils/api/delete-receipt'
-import { useLoaderData } from '@remix-run/react'
+import { Link, useLoaderData } from '@remix-run/react'
 import { Input } from '~/components/ui/input'
 import {
   Table,
@@ -18,8 +17,9 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { formatValue } from '~/utils/utils'
-import { Printer, Trash } from 'lucide-react'
+import { cn, formatValue } from '~/utils/utils'
+import { PlusCircle, Printer, Trash } from 'lucide-react'
+import { buttonVariants } from '~/components/ui/button'
 
 export async function clientLoader() {
   const farms = await getFarms({ search: undefined })
@@ -61,7 +61,10 @@ export default function Recibos() {
           type="text"
           placeholder="Pesquisar..."
         />
-        <CreateReciboDialog fazendas={data.farms} />
+        <Link to="/recibos/novo" className={cn(buttonVariants())}>
+          <PlusCircle className="mr-2 h-3.5 w-3.5" />
+          Novo recibo
+        </Link>
         <PrintListagem fazendas={data.farms} />
         <PrintRecibos fazendas={data.farms} />
       </div>
