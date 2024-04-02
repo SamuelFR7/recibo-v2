@@ -1,4 +1,9 @@
-import { ClientLoaderFunctionArgs, Link, useLoaderData } from '@remix-run/react'
+import {
+  ClientLoaderFunctionArgs,
+  Link,
+  useLoaderData,
+  useNavigate,
+} from '@remix-run/react'
 import { z } from 'zod'
 import { getUniqueReceipt } from '~/utils/api/get-unique-receipt'
 import { generic } from 'br-docs-validator'
@@ -19,6 +24,7 @@ import { Textarea } from '~/components/ui/textarea'
 import { cn } from '~/utils/utils'
 import { Button, buttonVariants } from '~/components/ui/button'
 import { Checkbox } from '~/components/ui/checkbox'
+import { env } from '~/utils/env'
 
 export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
   const receiptId = params.id
@@ -69,6 +75,7 @@ const schema = z.object({
 type Input = z.infer<typeof schema>
 
 export default function EditReceiptPage() {
+  const navigate = useNavigate()
   const data = useLoaderData<typeof clientLoader>()
   const form = useForm<Input>({
     resolver: zodResolver(schema),
@@ -94,6 +101,16 @@ export default function EditReceiptPage() {
         farm: data.receipt.fazenda,
         ...values,
       }),
+    onSuccess: (_, values) => {
+      if (values.alreadyPrint) {
+        window.open(
+          `${env.VITE_API_URL}/api/relatoriorecibo/unico?id=${data.receipt.id}`
+        )
+      }
+
+      form.reset()
+      navigate('/')
+    },
   })
 
   function handleSubmit(data: Input) {

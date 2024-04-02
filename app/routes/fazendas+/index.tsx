@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CreateFazendaDialog } from '~/components/dialogs/fazendas/create-fazenda'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteFarm } from '~/utils/api/delete-farm'
 import { Input } from '~/components/ui/input'
@@ -11,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { Pencil, Trash } from 'lucide-react'
+import { CirclePlus, Pencil, Trash } from 'lucide-react'
 import { Link, useSearchParams } from '@remix-run/react'
 import { cn } from '~/utils/utils'
 import { Button, buttonVariants } from '~/components/ui/button'
@@ -56,7 +55,14 @@ export default function Fazendas() {
           type="text"
           placeholder="Pesquisar..."
         />
-        <CreateFazendaDialog />
+        <Link
+          to="/fazendas/novo"
+          prefetch="intent"
+          className={cn(buttonVariants())}
+        >
+          <CirclePlus className="mr-2 h-3.5 w-3.5" />
+          Nova fazenda
+        </Link>
       </div>
       <div className="rounded-md border">
         <Table>

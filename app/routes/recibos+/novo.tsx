@@ -78,10 +78,10 @@ export default function NewReceiptPage() {
 
   const mutation = useMutation({
     mutationFn: (values: Input) => createReceipt(values),
-    onSuccess(_, values) {
+    onSuccess(data, values) {
       if (values.alreadyPrint) {
         window.open(
-          `${env.VITE_API_URL}/api/relatoriorecibo/unico?id=${values.farmId}`
+          `${env.VITE_API_URL}/api/relatoriorecibo/unico?id=${data.id}`
         )
       }
 
