@@ -14,8 +14,9 @@ import { Pencil, PlusCircle, Trash } from 'lucide-react'
 import { Link, useSearchParams } from '@remix-run/react'
 import { cn } from '~/utils/utils'
 import { Button, buttonVariants } from '~/components/ui/button'
+import { Skeleton } from '~/components/ui/skeleton'
 
-export default function Fazendas() {
+export default function FarmsPage() {
   const [searchParams, setSearchParams] = useSearchParams()
 
   const search = searchParams.get('q') || undefined
@@ -76,7 +77,7 @@ export default function Fazendas() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoadingFarms && !result && <h1>Skeleton</h1>}
+            {isLoadingFarms && !result && <FarmsTableSkeleton />}
 
             {result &&
               result.map((farm) => (
@@ -130,6 +131,38 @@ export default function Fazendas() {
           </TableBody>
         </Table>
       </div>
+    </>
+  )
+}
+
+function FarmsTableSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 10 }).map((_, i) => {
+        return (
+          <TableRow key={i}>
+            <TableCell>
+              <Skeleton className="h-4 w-[220px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[320px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[180px]" />
+            </TableCell>
+            <TableCell className="text-center">
+              <Button disabled variant="outline" size="icon">
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </TableCell>
+            <TableCell className="text-center">
+              <Button disabled variant="outline" size="icon">
+                <Trash className="h-4 w-4" />
+              </Button>
+            </TableCell>
+          </TableRow>
+        )
+      })}
     </>
   )
 }

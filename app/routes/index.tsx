@@ -20,6 +20,7 @@ import { PrintListDialog } from '~/components/dialogs/print-list-dialog'
 import { PrintReceiptsDialog } from '~/components/dialogs/print-receipts-dialog'
 import { z } from 'zod'
 import { Pagination } from '~/components/pagination'
+import { Skeleton } from '~/components/ui/skeleton'
 
 export async function clientLoader() {
   const farms = await getFarms({ search: undefined })
@@ -95,17 +96,17 @@ export default function Recibos() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="w-[120px]">Fazenda</TableHead>
+              <TableHead className="w-[180px]">Fazenda</TableHead>
               <TableHead className="w-[400px]">Beneficiario</TableHead>
               <TableHead className="w-[120px]">Numero</TableHead>
               <TableHead className="w-[150px] text-right">Valor</TableHead>
-              <TableHead className="w-[250px] text-center">Imprimir</TableHead>
+              <TableHead className="w-[200px] text-center">Imprimir</TableHead>
               <TableHead className="w-[200px] text-center">Editar</TableHead>
               <TableHead className="w-[200px] text-center">Excluir</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {isLoadingReceipts && !result && <h1>Skeleton</h1>}
+            {isLoadingReceipts && !result && <ReceiptsTableSkeleton />}
 
             {result &&
               result.data.map((receipt) => (
@@ -180,6 +181,46 @@ export default function Recibos() {
           totalCount={result.totalRecords}
         />
       )}
+    </>
+  )
+}
+
+function ReceiptsTableSkeleton() {
+  return (
+    <>
+      {Array.from({ length: 10 }).map((_, i) => {
+        return (
+          <TableRow key={i}>
+            <TableCell>
+              <Skeleton className="h-4 w-[170px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[380px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[70px]" />
+            </TableCell>
+            <TableCell>
+              <Skeleton className="h-4 w-[130px]" />
+            </TableCell>
+            <TableCell className="text-center">
+              <Button disabled variant="outline" size="icon">
+                <Printer className="h-4 w-4" />
+              </Button>
+            </TableCell>
+            <TableCell className="text-center">
+              <Button disabled variant="outline" size="icon">
+                <Pencil className="h-4 w-4" />
+              </Button>
+            </TableCell>
+            <TableCell className="text-center">
+              <Button disabled variant="outline" size="icon">
+                <Trash className="h-4 w-4" />
+              </Button>
+            </TableCell>
+          </TableRow>
+        )
+      })}
     </>
   )
 }
