@@ -5,7 +5,7 @@ type UpdateReceiptRequest = {
   id: number
   number: number
   farm: Farm
-  date: Date
+  date: string
   value: number
   historic?: string | null
   recipientName: string
@@ -34,7 +34,7 @@ export async function updateReceipt({
     Id: id,
     Numero: number,
     Fazenda: farm,
-    Data: date,
+    Data: new Date(date),
     Valor: value,
     Historico: historic,
     BeneficiarioNome: recipientName,

@@ -1,11 +1,11 @@
-import { Link, useLoaderData, useNavigate } from '@remix-run/react'
+import { ClientLoaderFunctionArgs, Link, useLoaderData } from '@remix-run/react'
 import { z } from 'zod'
-import { getFarms } from '~/utils/api/get-farms'
+import { getUniqueReceipt } from '~/utils/api/get-unique-receipt'
 import { generic } from 'br-docs-validator'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
-import { createReceipt } from '~/utils/api/create-receipt'
+import { updateReceipt } from '~/utils/api/update-receipt'
 import {
   Form,
   FormControl,
@@ -14,28 +14,31 @@ import {
   FormLabel,
   FormMessage,
 } from '~/components/ui/form'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
 import { Input } from '~/components/ui/input'
+import { Textarea } from '~/components/ui/textarea'
 import { cn } from '~/utils/utils'
 import { Button, buttonVariants } from '~/components/ui/button'
-import { Textarea } from '~/components/ui/textarea'
 import { Checkbox } from '~/components/ui/checkbox'
-import { env } from '~/utils/env'
 
-export async function clientLoader() {
-  const farms = await getFarms({ search: undefined })
+export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
+  const receiptId = params.id
 
-  return { farms }
+  if (!receiptId) {
+    throw new Response('Not found', {
+      status: 404,
+    })
+  }
+
+  const receipt = await getUniqueReceipt({
+    id: parseInt(receiptId),
+  })
+
+  return {
+    receipt,
+  }
 }
 
 const schema = z.object({
-  farmId: z.coerce.number().min(1, 'Selecione uma fazenda'),
   date: z.string(),
   value: z
     .number()
@@ -65,45 +68,37 @@ const schema = z.object({
 
 type Input = z.infer<typeof schema>
 
-export default function NewReceiptPage() {
-  const navigate = useNavigate()
+export default function EditReceiptPage() {
   const data = useLoaderData<typeof clientLoader>()
   const form = useForm<Input>({
     resolver: zodResolver(schema),
     defaultValues: {
-      date: new Date(Date.now()).toISOString().slice(0, 10),
       alreadyPrint: false,
+      date: new Date(data.receipt.data).toISOString().split('T')[0],
+      value: data.receipt.valor,
+      recipientName: data.receipt.beneficiarioNome,
+      recipientAddress: data.receipt.beneficiarioEndereco,
+      recipientDocument: data.receipt.beneficiarioDocumento,
+      payerName: data.receipt.pagadorNome,
+      payerAddress: data.receipt.pagadorEndereco,
+      payerDocument: data.receipt.pagadorDocumento,
+      historic: data.receipt.historico,
     },
   })
 
   const mutation = useMutation({
-    mutationFn: (values: Input) => createReceipt(values),
-    onSuccess(_, values) {
-      if (values.alreadyPrint) {
-        window.open(
-          `${env.VITE_API_URL}/api/relatoriorecibo/unico?id=${values.farmId}`
-        )
-      }
-
-      form.reset()
-      navigate('/')
-    },
+    mutationFn: (values: Input) =>
+      updateReceipt({
+        id: data.receipt.id,
+        number: data.receipt.numero,
+        farm: data.receipt.fazenda,
+        ...values,
+      }),
   })
 
   function handleSubmit(data: Input) {
     mutation.mutate(data)
   }
-
-  function changePayer(farmId: number) {
-    const farmToSet = data.farms.find((v) => v.id === farmId)
-
-    if (!farmToSet) return
-
-    form.setValue('payerName', farmToSet.pagadorNome)
-    form.setValue('payerAddress', farmToSet?.pagadorEndereco)
-    form.setValue('payerDocument', farmToSet?.pagadorDocumento)
-  }
-
   return (
     <>
       <div className="flex items-center">
@@ -115,36 +110,10 @@ export default function NewReceiptPage() {
           className="space-y-4"
         >
           <div className="grid grid-cols-3 gap-3">
-            <FormField
-              control={form.control}
-              name="farmId"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Fazenda</FormLabel>
-                  <Select
-                    onValueChange={(v) => {
-                      field.onChange(v)
-                      changePayer(parseInt(v))
-                    }}
-                    defaultValue={String(field.value)}
-                  >
-                    <FormControl>
-                      <SelectTrigger>
-                        <SelectValue placeholder="Selecione uma fazenda" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {data.farms.map((farm) => (
-                        <SelectItem key={farm.id} value={String(farm.id)}>
-                          {farm.nome}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <FormItem>
+              <FormLabel>Fazenda</FormLabel>
+              <Input value={data.receipt.fazenda.nome} disabled />
+            </FormItem>
             <FormField
               control={form.control}
               name="date"

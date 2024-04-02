@@ -61,7 +61,11 @@ export default function Recibos() {
           type="text"
           placeholder="Pesquisar..."
         />
-        <Link to="/recibos/novo" className={cn(buttonVariants())}>
+        <Link
+          to="/recibos/novo"
+          className={cn(buttonVariants())}
+          prefetch="intent"
+        >
           <PlusCircle className="mr-2 h-3.5 w-3.5" />
           Novo recibo
         </Link>
@@ -115,6 +119,7 @@ export default function Recibos() {
                           variant: 'outline',
                         })
                       )}
+                      prefetch="intent"
                     >
                       <Pencil className="h-4 w-4" />
                     </Link>
