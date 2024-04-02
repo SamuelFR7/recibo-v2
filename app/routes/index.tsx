@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Pagination } from '~/components/pagination'
-import { PrintListagem } from '~/components/dialogs/recibos/print-listagem'
 import { PrintRecibos } from '~/components/dialogs/recibos/print-recibos'
 import { getReceipts } from '~/utils/api/get-receipts'
 import { getFarms } from '~/utils/api/get-farms'
@@ -20,6 +19,7 @@ import { cn, formatValue } from '~/utils/utils'
 import { Pencil, PlusCircle, Printer, Trash } from 'lucide-react'
 import { Button, buttonVariants } from '~/components/ui/button'
 import { env } from '~/utils/env'
+import { PrintListDialog } from '~/components/dialogs/print-list-dialog'
 
 export async function clientLoader() {
   const farms = await getFarms({ search: undefined })
@@ -69,7 +69,7 @@ export default function Recibos() {
           <PlusCircle className="mr-2 h-3.5 w-3.5" />
           Novo recibo
         </Link>
-        <PrintListagem fazendas={data.farms} />
+        <PrintListDialog farms={data.farms} />
         <PrintRecibos fazendas={data.farms} />
       </div>
       <div className="rounded-md border">

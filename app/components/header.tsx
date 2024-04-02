@@ -10,6 +10,7 @@ export function Header() {
         <Link
           to="/"
           className="flex items-center gap-2 text-lg font-semibold md:text-base"
+          prefetch="intent"
         >
           <Receipt className="h-6 w-6" />
           <span className="sr-only">Recibo</span>
@@ -17,12 +18,14 @@ export function Header() {
         <Link
           to="/"
           className="text-primary-foreground transition-colors hover:text-muted-foreground"
+          prefetch="intent"
         >
           Inicio
         </Link>
         <Link
           to="/fazendas"
           className="text-primary-foreground transition-colors hover:text-muted-foreground"
+          prefetch="intent"
         >
           Fazendas
         </Link>
