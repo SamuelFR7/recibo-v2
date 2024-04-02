@@ -1,4 +1,4 @@
-import { PaginationItem } from './PaginationItem'
+import { PaginationItem } from './pagination-item'
 
 interface PaginationProps {
   totalCountOfRegisters: number

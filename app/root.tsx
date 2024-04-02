@@ -7,7 +7,7 @@ import {
 } from '@remix-run/react'
 import './tailwind.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Header } from './components/Header'
+import { Header } from './components/header'
 import { Loader2 } from 'lucide-react'
 
 export function Layout({ children }: { children: React.ReactNode }) {

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { SubmitHandler, useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useEffect, useState } from 'react'
-import { Select } from '../../Form/Select'
+import { Select } from '../../form/select'
 import { X } from 'phosphor-react'
 
 interface PrintListagemProps {

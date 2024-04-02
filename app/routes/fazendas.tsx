@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { Container } from '~/components/Container'
+import { Container } from '~/components/container'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Trash } from 'phosphor-react'
-import { CreateFazendaDialog } from '~/components/Dialogs/Fazendas/CreateFazenda'
-import { EditFazendaDialog } from '~/components/Dialogs/Fazendas/EditFazenda'
+import { CreateFazendaDialog } from '~/components/dialogs/fazendas/create-fazenda'
+import { EditFazendaDialog } from '~/components/dialogs/fazendas/edit-fazenda'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteFarm } from '~/utils/api/delete-farm'
 

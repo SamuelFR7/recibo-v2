@@ -3,17 +3,11 @@ import * as Dialog from '@radix-ui/react-dialog'
 import { useEffect, useState } from 'react'
 import { type SubmitHandler, useForm } from 'react-hook-form'
 import { z } from 'zod'
-import { Input } from '../../Form/Input'
+import { Input } from '../../form/input'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { type Farm } from '~/utils/types'
-import { Pencil } from 'phosphor-react'
-import { updateFarm } from '~/utils/api/update-farm'
+import { createFarm } from '~/utils/api/create-farm'
 
-interface EditFazendaProps {
-  fazendaData: Farm
-}
-
-const editFarmSchema = z.object({
+const createFarmSchema = z.object({
   nome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
   pagadorNome: z.string().min(1, { message: 'Digite um nome' }).toUpperCase(),
   pagadorEndereco: z.string().toUpperCase().nullish(),
@@ -27,9 +21,9 @@ const editFarmSchema = z.object({
     ),
 })
 
-type EditFarmSchema = z.infer<typeof editFarmSchema>
+type CreateFarmSchema = z.infer<typeof createFarmSchema>
 
-export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
+export function CreateFazendaDialog() {
   const [open, setOpen] = useState(false)
   const queryClient = useQueryClient()
 
@@ -38,23 +32,17 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
     formState: { errors },
     handleSubmit,
     reset,
-  } = useForm<EditFarmSchema>({
-    resolver: zodResolver(editFarmSchema),
-    defaultValues: {
-      nome: fazendaData.nome,
-      pagadorDocumento: fazendaData.pagadorDocumento,
-      pagadorEndereco: fazendaData.pagadorEndereco,
-      pagadorNome: fazendaData.pagadorNome,
-    },
+  } = useForm<CreateFarmSchema>({
+    resolver: zodResolver(createFarmSchema),
   })
 
   const mutation = useMutation({
-    mutationFn: (values: EditFarmSchema) =>
-      updateFarm({
-        id: fazendaData.id,
-        payerName: values.pagadorNome,
+    mutationFn: (values: CreateFarmSchema) =>
+      createFarm({
+        name: values.nome,
         payerAddress: values.pagadorEndereco,
         payerDocument: values.pagadorDocumento,
+        payerName: values.pagadorNome,
       }),
     onSuccess: async () => {
       await queryClient.invalidateQueries({
@@ -64,33 +52,28 @@ export function EditFazendaDialog({ fazendaData }: EditFazendaProps) {
     },
   })
 
-  const handleEditFarm: SubmitHandler<EditFarmSchema> = async (values) => {
+  const handleCreateFarm: SubmitHandler<CreateFarmSchema> = async (values) => {
     mutation.mutate(values)
   }
 
   useEffect(() => {
-    reset({
-      nome: fazendaData.nome,
-      pagadorDocumento: fazendaData.pagadorDocumento,
-      pagadorEndereco: fazendaData.pagadorEndereco,
-      pagadorNome: fazendaData.pagadorNome,
-    })
-  }, [open, reset, fazendaData])
+    reset()
+  }, [open, reset])
 
   return (
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger asChild>
         <button className="rounded-md bg-sky-400 px-3 py-2 font-medium text-white hover:bg-sky-500">
-          <Pencil size={16} weight="bold" />
+          Adicionar Fazenda
         </button>
       </Dialog.Trigger>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 grid place-items-center overflow-y-auto bg-black/30">
           <Dialog.Content className="min-w-[1000px] rounded-md bg-white p-5">
             <Dialog.Title className="mb-2 text-2xl font-bold">
-              Editar fazenda
+              Nova fazenda
             </Dialog.Title>
-            <form onSubmit={handleSubmit(handleEditFarm)}>
+            <form onSubmit={handleSubmit(handleCreateFarm)}>
               <Input
                 label="Nome fazenda"
                 {...register('nome')}
