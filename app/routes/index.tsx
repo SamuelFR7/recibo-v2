@@ -1,10 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState } from 'react'
-import { Pagination } from '~/components/pagination'
 import { getReceipts } from '~/utils/api/get-receipts'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteReceipt } from '~/utils/api/delete-receipt'
-import { Link, useLoaderData } from '@remix-run/react'
+import { Link, useLoaderData, useSearchParams } from '@remix-run/react'
 import { Input } from '~/components/ui/input'
 import {
   Table,
@@ -20,6 +18,8 @@ import { Button, buttonVariants } from '~/components/ui/button'
 import { env } from '~/utils/env'
 import { PrintListDialog } from '~/components/dialogs/print-list-dialog'
 import { PrintReceiptsDialog } from '~/components/dialogs/print-receipts-dialog'
+import { z } from 'zod'
+import { Pagination } from '~/components/pagination'
 
 export async function clientLoader() {
   const farms = await getFarms({ search: undefined })
@@ -31,13 +31,15 @@ export async function clientLoader() {
 
 export default function Recibos() {
   const data = useLoaderData<typeof clientLoader>()
-  const [search, setSearch] = useState('')
-  const [currentPage, setCurrentPage] = useState(1)
+  const [searchParams, setSearchParams] = useSearchParams()
   const queryClient = useQueryClient()
 
+  const search = searchParams.get('q') || undefined
+  const page = z.coerce.number().parse(searchParams.get('page') || '1')
+
   const { data: result, isLoading: isLoadingReceipts } = useQuery({
-    queryKey: ['recibos', currentPage, search],
-    queryFn: () => getReceipts({ search, page: currentPage }),
+    queryKey: ['recibos', page, search],
+    queryFn: () => getReceipts({ search, page }),
   })
 
   const { mutate: deleteReceiptFn } = useMutation({
@@ -49,6 +51,23 @@ export default function Recibos() {
     },
   })
 
+  function handleSearch(v: string) {
+    setSearchParams((prev) => {
+      prev.set('q', v)
+      prev.set('page', '1')
+
+      return prev
+    })
+  }
+
+  function handlePaginate(page: number) {
+    setSearchParams((prev) => {
+      prev.set('page', page.toString())
+
+      return prev
+    })
+  }
+
   return (
     <>
       <div className="flex items-center">
@@ -56,8 +75,8 @@ export default function Recibos() {
       </div>
       <div className="flex flex-col items-center gap-4 md:flex-row">
         <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          defaultValue={search}
+          onChange={(e) => handleSearch(e.target.value)}
           type="text"
           placeholder="Pesquisar..."
         />
@@ -155,10 +174,10 @@ export default function Recibos() {
       </div>
       {result && (
         <Pagination
-          onPageChange={setCurrentPage}
-          totalCountOfRegisters={result.totalRecords}
-          currentPage={currentPage}
-          registersPerPage={result.pageSize}
+          onPageChange={handlePaginate}
+          currentPage={page}
+          perPage={result.pageSize}
+          totalCount={result.totalRecords}
         />
       )}
     </>
