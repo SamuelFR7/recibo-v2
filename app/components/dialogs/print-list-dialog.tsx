@@ -21,6 +21,7 @@ import {
 } from '../ui/select'
 import { env } from '~/utils/env'
 import { useState } from 'react'
+import { cn } from '~/utils/utils'
 
 interface PrintListDialogProps {
   farms: Farm[]
@@ -52,7 +53,7 @@ export function PrintListDialog({ farms }: PrintListDialogProps) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button>
+        <Button className={cn('w-full md:w-[190px]')}>
           <Printer className="mr-2 h-3.5 w-3.5" />
           Imprimir listagem
         </Button>

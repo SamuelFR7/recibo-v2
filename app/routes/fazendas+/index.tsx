@@ -10,7 +10,7 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { CirclePlus, Pencil, Trash } from 'lucide-react'
+import { Pencil, PlusCircle, Trash } from 'lucide-react'
 import { Link, useSearchParams } from '@remix-run/react'
 import { cn } from '~/utils/utils'
 import { Button, buttonVariants } from '~/components/ui/button'
@@ -58,9 +58,9 @@ export default function Fazendas() {
         <Link
           to="/fazendas/novo"
           prefetch="intent"
-          className={cn(buttonVariants())}
+          className={cn(buttonVariants(), 'w-full md:w-[150px]')}
         >
-          <CirclePlus className="mr-2 h-3.5 w-3.5" />
+          <PlusCircle className="mr-2 h-3.5 w-3.5" />
           Nova fazenda
         </Link>
       </div>

@@ -20,7 +20,7 @@ export function Pagination({
   perPage,
   onPageChange,
 }: PaginationProps) {
-  const pages = Math.floor(totalCount / perPage) || 1
+  const pages = Math.ceil(totalCount / perPage) || 1
 
   return (
     <div className="flex items-center justify-between">
@@ -63,7 +63,7 @@ export function Pagination({
           <Button
             variant="outline"
             className="hidden h-8 w-8 p-0 lg:flex"
-            onClick={() => onPageChange(pages - 1)}
+            onClick={() => onPageChange(pages)}
             disabled={pages <= currentPage}
           >
             <span className="sr-only">Última página</span>

@@ -82,7 +82,7 @@ export default function Recibos() {
         />
         <Link
           to="/recibos/novo"
-          className={cn(buttonVariants())}
+          className={cn(buttonVariants(), 'w-full md:w-[135px]')}
           prefetch="intent"
         >
           <PlusCircle className="mr-2 h-3.5 w-3.5" />
