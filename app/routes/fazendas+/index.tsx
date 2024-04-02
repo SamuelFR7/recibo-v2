@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CreateFazendaDialog } from '~/components/dialogs/fazendas/create-fazenda'
-import { EditFazendaDialog } from '~/components/dialogs/fazendas/edit-fazenda'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteFarm } from '~/utils/api/delete-farm'
 import { Input } from '~/components/ui/input'
@@ -12,8 +11,10 @@ import {
   TableHeader,
   TableRow,
 } from '~/components/ui/table'
-import { Trash } from 'lucide-react'
-import { useSearchParams } from '@remix-run/react'
+import { Pencil, Trash } from 'lucide-react'
+import { Link, useSearchParams } from '@remix-run/react'
+import { cn } from '~/utils/utils'
+import { Button, buttonVariants } from '~/components/ui/button'
 
 export default function Fazendas() {
   const [searchParams, setSearchParams] = useSearchParams()
@@ -78,10 +79,21 @@ export default function Fazendas() {
                   <TableCell>{farm.pagadorNome}</TableCell>
                   <TableCell>{farm.pagadorEndereco}</TableCell>
                   <TableCell className="text-center">
-                    <EditFazendaDialog fazendaData={farm} />
+                    <Link
+                      to={`/fazendas/${farm.id}`}
+                      className={cn(
+                        buttonVariants({
+                          size: 'icon',
+                          variant: 'outline',
+                        })
+                      )}
+                      prefetch="intent"
+                    >
+                      <Pencil className="h-4 w-4" />
+                    </Link>
                   </TableCell>
                   <TableCell className="text-center">
-                    <button
+                    <Button
                       onClick={() =>
                         window.confirm(
                           'Certeza que deseja deletar esse item?'
@@ -90,10 +102,11 @@ export default function Fazendas() {
                           id: farm.id,
                         })
                       }
-                      className="rounded-md bg-sky-400 px-3 py-2 text-white hover:bg-sky-500"
+                      size="icon"
+                      variant="outline"
                     >
-                      <Trash size={16} />
-                    </button>
+                      <Trash className="h-4 w-4" />
+                    </Button>
                   </TableCell>
                 </TableRow>
               ))}
