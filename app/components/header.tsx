@@ -17,14 +17,14 @@ export function Header() {
         </Link>
         <Link
           to="/"
-          className="text-primary-foreground transition-colors hover:text-muted-foreground"
+          className="text-primary-foreground transition-colors hover:text-primary-foreground/50"
           prefetch="intent"
         >
           Inicio
         </Link>
         <Link
           to="/fazendas"
-          className="text-primary-foreground transition-colors hover:text-muted-foreground"
+          className="text-primary-foreground transition-colors hover:text-primary-foreground/50"
           prefetch="intent"
         >
           Fazendas
@@ -48,13 +48,13 @@ export function Header() {
             </Link>
             <Link
               to="/"
-              className="text--muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground"
             >
               Inicio
             </Link>
             <Link
               to="/fazendas"
-              className="text--muted-foreground hover:text-foreground"
+              className="text-muted-foreground hover:text-foreground"
             >
               Fazendas
             </Link>
