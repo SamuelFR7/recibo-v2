@@ -5,7 +5,7 @@ on:
     branches: ['*']
 
 env:
-  VITE_API_ADDRESS: 'http://fake.com'
+  VITE_API_URL: 'http://fake.com'
 
 jobs:
   typecheck-lint:

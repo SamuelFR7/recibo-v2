@@ -7,7 +7,7 @@ import {
 } from '@remix-run/react'
 import './tailwind.css'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { Header } from './components/Header'
+import { Header } from './components/header'
 import { Loader2 } from 'lucide-react'
 
 export function Layout({ children }: { children: React.ReactNode }) {
@@ -18,6 +18,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
+        <title>Recibo</title>
       </head>
       <body>
         {children}
@@ -33,8 +34,12 @@ const queryClient = new QueryClient()
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <Header />
-      <Outlet />
+      <div className="flex min-h-screen w-full flex-col">
+        <Header />
+        <main className="flex flex-1 flex-col gap-4 p-4 lg:p-6">
+          <Outlet />
+        </main>
+      </div>
     </QueryClientProvider>
   )
 }

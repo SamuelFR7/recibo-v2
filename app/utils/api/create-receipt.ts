@@ -2,7 +2,7 @@ import { api } from '../axios'
 
 type CreateReceiptRequest = {
   farmId: number
-  date: Date
+  date: string
   value: number
   historic?: string | null
   recipientName: string
@@ -35,7 +35,7 @@ export async function createReceipt({
       PagadorDocumento: '',
     },
     Numero: '0',
-    Data: date,
+    Data: new Date(date),
     Valor: value,
     Historico: historic,
     BeneficiarioNome: recipientName,

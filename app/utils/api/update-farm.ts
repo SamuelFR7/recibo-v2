@@ -2,6 +2,7 @@ import { api } from '../axios'
 
 type UpdateFarmRequest = {
   id: number
+  name: string
   payerName: string
   payerAddress?: string | null
   payerDocument?: string | null
@@ -9,6 +10,7 @@ type UpdateFarmRequest = {
 
 export async function updateFarm({
   id,
+  name,
   payerName,
   payerAddress,
   payerDocument,

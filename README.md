@@ -1,3 +1,0 @@
-- [] Receipts table skeleton
-- [] Farms table skeleton
-- [] Loader with primary color
