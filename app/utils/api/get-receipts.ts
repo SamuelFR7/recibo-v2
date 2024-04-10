@@ -16,14 +16,17 @@ export type GetReceiptsResponse = {
 export async function getReceipts({
   search,
   page,
+  farmId,
 }: {
   search?: string
   page: number
+  farmId: number
 }) {
   const response = await api.get<GetReceiptsResponse>('/api/recibo', {
     params: {
       nome: search,
       PageNumber: page,
+      FazendaId: farmId === 0 ? undefined : farmId,
     },
   })
 

@@ -21,6 +21,13 @@ import { PrintReceiptsDialog } from '~/components/dialogs/print-receipts-dialog'
 import { z } from 'zod'
 import { Pagination } from '~/components/pagination'
 import { Skeleton } from '~/components/ui/skeleton'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 
 export async function clientLoader() {
   const farms = await getFarms({ search: undefined })
@@ -37,10 +44,11 @@ export default function Recibos() {
 
   const search = searchParams.get('q') || undefined
   const page = z.coerce.number().parse(searchParams.get('page') || '1')
+  const farmId = z.coerce.number().parse(searchParams.get('farmId') || '0')
 
   const { data: result, isLoading: isLoadingReceipts } = useQuery({
     queryKey: ['recibos', page, search],
-    queryFn: () => getReceipts({ search, page }),
+    queryFn: () => getReceipts({ search, page, farmId }),
   })
 
   const { mutate: deleteReceiptFn } = useMutation({
@@ -55,6 +63,15 @@ export default function Recibos() {
   function handleSearch(v: string) {
     setSearchParams((prev) => {
       prev.set('q', v)
+      prev.set('page', '1')
+
+      return prev
+    })
+  }
+
+  function handleFilterFarm(v: string) {
+    setSearchParams((prev) => {
+      prev.set('farmId', v)
       prev.set('page', '1')
 
       return prev
@@ -81,6 +98,22 @@ export default function Recibos() {
           type="text"
           placeholder="Pesquisar..."
         />
+        <Select
+          onValueChange={(v) => handleFilterFarm(v)}
+          defaultValue={String(farmId)}
+        >
+          <SelectTrigger className="max-w-[250px]">
+            <SelectValue placeholder="Filtre pela fazenda" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="0">Todas fazendas</SelectItem>
+            {data.farms.map((farm) => (
+              <SelectItem key={farm.id} value={String(farm.id)}>
+                {farm.nome}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <Link
           to="/recibos/novo"
           className={cn(buttonVariants(), 'w-full md:w-[135px]')}
