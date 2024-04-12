@@ -45,7 +45,12 @@ const schema = z.object({
   payerAddress: z.string().toUpperCase().optional(),
   payerDocument: z
     .string()
-    .refine((v) => generic.isValid(v))
+    .refine((v) => {
+      if (v.length !== 0) {
+        return generic.isValid(v)
+      }
+      return true
+    }, 'Digite um CPF ou CNPJ válido ou deixe vazio')
     .optional(),
 })
 

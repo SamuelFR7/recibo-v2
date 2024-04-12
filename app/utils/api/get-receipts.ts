@@ -24,9 +24,9 @@ export async function getReceipts({
 }) {
   const response = await api.get<GetReceiptsResponse>('/api/recibo', {
     params: {
-      nome: search,
+      beneficiario: search,
       PageNumber: page,
-      FazendaId: farmId === 0 ? undefined : farmId,
+      FazendaId: farmId,
     },
   })
 

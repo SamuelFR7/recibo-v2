@@ -47,7 +47,7 @@ export default function Recibos() {
   const farmId = z.coerce.number().parse(searchParams.get('farmId') || '0')
 
   const { data: result, isLoading: isLoadingReceipts } = useQuery({
-    queryKey: ['recibos', page, search],
+    queryKey: ['recibos', page, search, farmId],
     queryFn: () => getReceipts({ search, page, farmId }),
   })
 
