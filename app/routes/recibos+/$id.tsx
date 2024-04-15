@@ -46,7 +46,7 @@ export async function clientLoader({ params }: ClientLoaderFunctionArgs) {
 
 const schema = z.object({
   date: z.string(),
-  value: z
+  value: z.coerce
     .number()
     .min(0.01, 'Digite um valor acima de 0')
     .multipleOf(0.01, 'O valor pode ter no máximo duas casas decimais'),
@@ -54,19 +54,23 @@ const schema = z.object({
   recipientAddress: z.string().toUpperCase().optional(),
   recipientDocument: z
     .string()
-    .refine(
-      (v) => generic.isValid(v),
-      'Digite um CPF ou CNPJ válido ou deixe vazio'
-    )
+    .refine((v) => {
+      if (v.length !== 0) {
+        return generic.isValid(v)
+      }
+      return true
+    }, 'Digite um CPF ou CNPJ válido ou deixe vazio')
     .optional(),
   payerName: z.string().min(1, 'Digite um nome').toUpperCase(),
   payerAddress: z.string().toUpperCase().optional(),
   payerDocument: z
     .string()
-    .refine(
-      (v) => generic.isValid(v),
-      'Digite um CPF ou CNPJ válido ou deixe vazio'
-    )
+    .refine((v) => {
+      if (v.length !== 0) {
+        return generic.isValid(v)
+      }
+      return true
+    }, 'Digite um CPF ou CNPJ válido ou deixe vazio')
     .optional(),
   historic: z.string().toUpperCase().optional(),
   alreadyPrint: z.boolean().default(false),
@@ -84,12 +88,12 @@ export default function EditReceiptPage() {
       date: new Date(data.receipt.data).toISOString().split('T')[0],
       value: data.receipt.valor,
       recipientName: data.receipt.beneficiarioNome,
-      recipientAddress: data.receipt.beneficiarioEndereco,
-      recipientDocument: data.receipt.beneficiarioDocumento,
+      recipientAddress: data.receipt.beneficiarioEndereco ?? undefined,
+      recipientDocument: data.receipt.beneficiarioDocumento ?? undefined,
       payerName: data.receipt.pagadorNome,
-      payerAddress: data.receipt.pagadorEndereco,
-      payerDocument: data.receipt.pagadorDocumento,
-      historic: data.receipt.historico,
+      payerAddress: data.receipt.pagadorEndereco ?? undefined,
+      payerDocument: data.receipt.pagadorDocumento ?? undefined,
+      historic: data.receipt.historico ?? undefined,
     },
   })
 
@@ -108,7 +112,6 @@ export default function EditReceiptPage() {
         )
       }
 
-      form.reset()
       navigate('/')
     },
   })

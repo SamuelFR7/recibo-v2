@@ -37,7 +37,7 @@ export async function clientLoader() {
 const schema = z.object({
   farmId: z.coerce.number().min(1, 'Selecione uma fazenda'),
   date: z.string(),
-  value: z
+  value: z.coerce
     .number()
     .min(0.01, 'Digite um valor acima de 0')
     .multipleOf(0.01, 'O valor pode ter no máximo duas casas decimais'),
@@ -45,19 +45,23 @@ const schema = z.object({
   recipientAddress: z.string().toUpperCase().optional(),
   recipientDocument: z
     .string()
-    .refine(
-      (v) => generic.isValid(v),
-      'Digite um CPF ou CNPJ válido ou deixe vazio'
-    )
+    .refine((v) => {
+      if (v.length !== 0) {
+        return generic.isValid(v)
+      }
+      return true
+    }, 'Digite um CPF ou CNPJ válido ou deixe vazio')
     .optional(),
   payerName: z.string().min(1, 'Digite um nome').toUpperCase(),
   payerAddress: z.string().toUpperCase().optional(),
   payerDocument: z
     .string()
-    .refine(
-      (v) => generic.isValid(v),
-      'Digite um CPF ou CNPJ válido ou deixe vazio'
-    )
+    .refine((v) => {
+      if (v.length !== 0) {
+        return generic.isValid(v)
+      }
+      return true
+    }, 'Digite um CPF ou CNPJ válido ou deixe vazio')
     .optional(),
   historic: z.string().toUpperCase().optional(),
   alreadyPrint: z.boolean().default(false),
@@ -85,7 +89,6 @@ export default function NewReceiptPage() {
         )
       }
 
-      form.reset()
       navigate('/')
     },
   })
@@ -100,8 +103,8 @@ export default function NewReceiptPage() {
     if (!farmToSet) return
 
     form.setValue('payerName', farmToSet.pagadorNome)
-    form.setValue('payerAddress', farmToSet?.pagadorEndereco)
-    form.setValue('payerDocument', farmToSet?.pagadorDocumento)
+    form.setValue('payerAddress', farmToSet.pagadorEndereco ?? undefined)
+    form.setValue('payerDocument', farmToSet.pagadorDocumento ?? undefined)
   }
 
   return (
