@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteFarm } from '~/utils/api/delete-farm'
 import { Input } from '~/components/ui/input'
@@ -21,7 +21,6 @@ export default function FarmsPage() {
 
   const search = searchParams.get('q') || undefined
 
-  const queryClient = useQueryClient()
   const { data: result, isLoading: isLoadingFarms } = useQuery({
     queryKey: ['fazendas', search],
     queryFn: () => getFarms({ search }),
@@ -29,11 +28,6 @@ export default function FarmsPage() {
 
   const { mutate: deleteFarmFn } = useMutation({
     mutationFn: deleteFarm,
-    onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['fazendas'],
-      })
-    },
   })
 
   function handleSearch(v: string) {

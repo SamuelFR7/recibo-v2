@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { getReceipts } from '~/utils/api/get-receipts'
 import { getFarms } from '~/utils/api/get-farms'
 import { deleteReceipt } from '~/utils/api/delete-receipt'
@@ -40,7 +40,6 @@ export async function clientLoader() {
 export default function Recibos() {
   const data = useLoaderData<typeof clientLoader>()
   const [searchParams, setSearchParams] = useSearchParams()
-  const queryClient = useQueryClient()
 
   const search = searchParams.get('q') || undefined
   const page = z.coerce.number().parse(searchParams.get('page') || '1')
@@ -53,11 +52,6 @@ export default function Recibos() {
 
   const { mutate: deleteReceiptFn } = useMutation({
     mutationFn: deleteReceipt,
-    onSuccess: async () => {
-      await queryClient.invalidateQueries({
-        queryKey: ['recibos'],
-      })
-    },
   })
 
   function handleSearch(v: string) {

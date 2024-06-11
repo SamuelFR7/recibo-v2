@@ -6,9 +6,10 @@ import {
   ScrollRestoration,
 } from '@remix-run/react'
 import './tailwind.css'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import { QueryClientProvider } from '@tanstack/react-query'
 import { Header } from './components/header'
 import { Loader2 } from 'lucide-react'
+import { queryClient } from './utils/query-client'
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -28,8 +29,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
     </html>
   )
 }
-
-const queryClient = new QueryClient()
 
 export default function App() {
   return (
