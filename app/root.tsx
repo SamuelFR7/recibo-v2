@@ -5,11 +5,29 @@ import {
   Scripts,
   ScrollRestoration,
 } from '@remix-run/react'
-import './tailwind.css'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { Header } from './components/header'
 import { Loader2 } from 'lucide-react'
 import { queryClient } from './utils/query-client'
+import stylesheet from './tailwind.css?url'
+import { LinksFunction, MetaFunction } from '@remix-run/node'
+
+export const links: LinksFunction = () => {
+  return [
+    {
+      rel: 'stylesheet',
+      href: stylesheet,
+    },
+  ]
+}
+
+export const meta: MetaFunction = () => {
+  return [
+    {
+      title: 'Recibo',
+    },
+  ]
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -19,7 +37,6 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
         <Links />
-        <title>Recibo</title>
       </head>
       <body>
         {children}
